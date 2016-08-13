@@ -10,16 +10,15 @@
     "authors": [
         {
             "name": "Taylor Otwell",
-            "email": "taylor@laravel.com"
+            "email": "taylorotwell@gmail.com"
         }
     ],
     "require": {
-        "php": ">=5.5.9",
-        "ext-mbstring": "*",
+        "php": ">=5.4.0",
         "ext-openssl": "*",
-        "illuminate/contracts": "5.2.*",
-        "illuminate/support": "5.2.*",
-        "paragonie/random_compat": "~1.4"
+        "illuminate/contracts": "5.0.*",
+        "illuminate/support": "5.0.*",
+        "symfony/security-core": "2.6.*"
     },
     "autoload": {
         "psr-4": {
@@ -28,7 +27,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "5.2-dev"
+            "dev-master": "5.0-dev"
         }
     },
     "minimum-stability": "dev"

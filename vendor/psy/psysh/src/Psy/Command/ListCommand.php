@@ -1,9 +1,9 @@
 <?php
 
 /*
- * This file is part of Psy Shell.
+ * This file is part of Psy Shell
  *
- * (c) 2012-2015 Justin Hileman
+ * (c) 2012-2014 Justin Hileman
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -22,8 +22,8 @@ use Psy\Command\ListCommand\PropertyEnumerator;
 use Psy\Command\ListCommand\TraitEnumerator;
 use Psy\Command\ListCommand\VariableEnumerator;
 use Psy\Exception\RuntimeException;
-use Psy\VarDumper\Presenter;
-use Psy\VarDumper\PresenterAware;
+use Psy\Presenter\PresenterManager;
+use Psy\Presenter\PresenterManagerAware;
 use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Helper\TableHelper;
 use Symfony\Component\Console\Input\InputArgument;
@@ -34,19 +34,19 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * List available local variables, object properties, etc.
  */
-class ListCommand extends ReflectingCommand implements PresenterAware
+class ListCommand extends ReflectingCommand implements PresenterManagerAware
 {
-    protected $presenter;
+    protected $presenterManager;
     protected $enumerators;
 
     /**
-     * PresenterAware interface.
+     * PresenterManagerAware interface.
      *
-     * @param Presenter $manager
+     * @param PresenterManager $manager
      */
-    public function setPresenter(Presenter $presenter)
+    public function setPresenterManager(PresenterManager $manager)
     {
-        $this->presenter = $presenter;
+        $this->presenterManager = $manager;
     }
 
     /**
@@ -84,7 +84,7 @@ class ListCommand extends ReflectingCommand implements PresenterAware
             ))
             ->setDescription('List local, instance or class variables, methods and constants.')
             ->setHelp(
-                <<<'HELP'
+                <<<HELP
 List variables, constants, classes, interfaces, traits, functions, methods,
 and properties.
 
@@ -96,7 +96,7 @@ and methods on that class.
 
 e.g.
 <return>>>> ls</return>
-<return>>>> ls $foo</return>
+<return>>>> ls \$foo</return>
 <return>>>> ls -k --grep mongo -i</return>
 <return>>>> ls -al ReflectionClass</return>
 <return>>>> ls --constants --category date</return>
@@ -141,7 +141,7 @@ HELP
     protected function initEnumerators()
     {
         if (!isset($this->enumerators)) {
-            $mgr = $this->presenter;
+            $mgr = $this->presenterManager;
 
             $this->enumerators = array(
                 new ClassConstantEnumerator($mgr),

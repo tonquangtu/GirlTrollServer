@@ -1,72 +1,73 @@
-<?php
+<?php namespace Illuminate\Foundation\Console;
 
-namespace Illuminate\Foundation\Console;
-
+use Illuminate\Support\Str;
 use Illuminate\Console\Command;
+use Symfony\Component\Console\Input\InputOption;
 
-class KeyGenerateCommand extends Command
-{
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'key:generate {--show : Display the key instead of modifying files}';
+class KeyGenerateCommand extends Command {
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Set the application key';
+	/**
+	 * The console command name.
+	 *
+	 * @var string
+	 */
+	protected $name = 'key:generate';
 
-    /**
-     * Execute the console command.
-     *
-     * @return void
-     */
-    public function fire()
-    {
-        $key = $this->generateRandomKey();
+	/**
+	 * The console command description.
+	 *
+	 * @var string
+	 */
+	protected $description = "Set the application key";
 
-        if ($this->option('show')) {
-            return $this->line('<comment>'.$key.'</comment>');
-        }
+	/**
+	 * Execute the console command.
+	 *
+	 * @return void
+	 */
+	public function fire()
+	{
+		$key = $this->getRandomKey();
 
-        // Next, we will replace the application key in the environment file so it is
-        // automatically setup for this developer. This key gets generated using a
-        // secure random byte generator and is later base64 encoded for storage.
-        $this->setKeyInEnvironmentFile($key);
+		if ($this->option('show'))
+		{
+			return $this->line('<comment>'.$key.'</comment>');
+		}
 
-        $this->laravel['config']['app.key'] = $key;
+		$path = base_path('.env');
 
-        $this->info("Application key [$key] set successfully.");
-    }
+		if (file_exists($path))
+		{
+			file_put_contents($path, str_replace(
+				$this->laravel['config']['app.key'], $key, file_get_contents($path)
+			));
+		}
 
-    /**
-     * Set the application key in the environment file.
-     *
-     * @param  string  $key
-     * @return void
-     */
-    protected function setKeyInEnvironmentFile($key)
-    {
-        file_put_contents($this->laravel->environmentFilePath(), str_replace(
-            'APP_KEY='.$this->laravel['config']['app.key'],
-            'APP_KEY='.$key,
-            file_get_contents($this->laravel->environmentFilePath())
-        ));
-    }
+		$this->laravel['config']['app.key'] = $key;
 
-    /**
-     * Generate a random key for the application.
-     *
-     * @return string
-     */
-    protected function generateRandomKey()
-    {
-        return 'base64:'.base64_encode(random_bytes(
-            $this->laravel['config']['app.cipher'] == 'AES-128-CBC' ? 16 : 32
-        ));
-    }
+		$this->info("Application key [$key] set successfully.");
+	}
+
+	/**
+	 * Generate a random key for the application.
+	 *
+	 * @return string
+	 */
+	protected function getRandomKey()
+	{
+		return Str::random(32);
+	}
+
+	/**
+	 * Get the console command options.
+	 *
+	 * @return array
+	 */
+	protected function getOptions()
+	{
+		return array(
+			array('show', null, InputOption::VALUE_NONE, 'Simply display the key instead of modifying files.'),
+		);
+	}
+
 }

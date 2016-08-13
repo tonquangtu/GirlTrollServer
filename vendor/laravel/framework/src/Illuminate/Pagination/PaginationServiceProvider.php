@@ -1,30 +1,25 @@
-<?php
-
-namespace Illuminate\Pagination;
+<?php namespace Illuminate\Pagination;
 
 use Illuminate\Support\ServiceProvider;
 
-class PaginationServiceProvider extends ServiceProvider
-{
-    /**
-     * Register the service provider.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        Paginator::currentPathResolver(function () {
-            return $this->app['request']->url();
-        });
+class PaginationServiceProvider extends ServiceProvider {
 
-        Paginator::currentPageResolver(function ($pageName = 'page') {
-            $page = $this->app['request']->input($pageName);
+	/**
+	 * Register the service provider.
+	 *
+	 * @return void
+	 */
+	public function register()
+	{
+		Paginator::currentPathResolver(function()
+		{
+			return $this->app['request']->url();
+		});
 
-            if (filter_var($page, FILTER_VALIDATE_INT) !== false && (int) $page >= 1) {
-                return $page;
-            }
+		Paginator::currentPageResolver(function()
+		{
+			return $this->app['request']->input('page');
+		});
+	}
 
-            return 1;
-        });
-    }
 }

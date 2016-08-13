@@ -1,136 +1,132 @@
-<?php
-
-namespace Illuminate\Routing;
+<?php namespace Illuminate\Routing;
 
 use ReflectionClass;
 use ReflectionMethod;
-use Illuminate\Support\Str;
 
-/**
- * @deprecated since version 5.2.
- */
-class ControllerInspector
-{
-    /**
-     * An array of HTTP verbs.
-     *
-     * @var array
-     */
-    protected $verbs = [
-        'any', 'get', 'post', 'put', 'patch',
-        'delete', 'head', 'options',
-    ];
+class ControllerInspector {
 
-    /**
-     * Get the routable methods for a controller.
-     *
-     * @param  string  $controller
-     * @param  string  $prefix
-     * @return array
-     */
-    public function getRoutable($controller, $prefix)
-    {
-        $routable = [];
+	/**
+	 * An array of HTTP verbs.
+	 *
+	 * @var array
+	 */
+	protected $verbs = array(
+		'any', 'get', 'post', 'put', 'patch',
+		'delete', 'head', 'options',
+	);
 
-        $reflection = new ReflectionClass($controller);
+	/**
+	 * Get the routable methods for a controller.
+	 *
+	 * @param  string  $controller
+	 * @param  string  $prefix
+	 * @return array
+	 */
+	public function getRoutable($controller, $prefix)
+	{
+		$routable = array();
 
-        $methods = $reflection->getMethods(ReflectionMethod::IS_PUBLIC);
+		$reflection = new ReflectionClass($controller);
 
-        // To get the routable methods, we will simply spin through all methods on the
-        // controller instance checking to see if it belongs to the given class and
-        // is a publicly routable method. If so, we will add it to this listings.
-        foreach ($methods as $method) {
-            if ($this->isRoutable($method)) {
-                $data = $this->getMethodData($method, $prefix);
+		$methods = $reflection->getMethods(ReflectionMethod::IS_PUBLIC);
 
-                $routable[$method->name][] = $data;
+		// To get the routable methods, we will simply spin through all methods on the
+		// controller instance checking to see if it belongs to the given class and
+		// is a publicly routable method. If so, we will add it to this listings.
+		foreach ($methods as $method)
+		{
+			if ($this->isRoutable($method))
+			{
+				$data = $this->getMethodData($method, $prefix);
 
-                // If the routable method is an index method, we will create a special index
-                // route which is simply the prefix and the verb and does not contain any
-                // the wildcard place-holders that each "typical" routes would contain.
-                if ($data['plain'] == $prefix.'/index') {
-                    $routable[$method->name][] = $this->getIndexData($data, $prefix);
-                }
-            }
-        }
+				$routable[$method->name][] = $data;
 
-        return $routable;
-    }
+				// If the routable method is an index method, we will create a special index
+				// route which is simply the prefix and the verb and does not contain any
+				// the wildcard place-holders that each "typical" routes would contain.
+				if ($data['plain'] == $prefix.'/index')
+				{
+					$routable[$method->name][] = $this->getIndexData($data, $prefix);
+				}
+			}
+		}
 
-    /**
-     * Determine if the given controller method is routable.
-     *
-     * @param  \ReflectionMethod  $method
-     * @return bool
-     */
-    public function isRoutable(ReflectionMethod $method)
-    {
-        if ($method->class == 'Illuminate\Routing\Controller') {
-            return false;
-        }
+		return $routable;
+	}
 
-        return Str::startsWith($method->name, $this->verbs);
-    }
+	/**
+	 * Determine if the given controller method is routable.
+	 *
+	 * @param  \ReflectionMethod  $method
+	 * @return bool
+	 */
+	public function isRoutable(ReflectionMethod $method)
+	{
+		if ($method->class == 'Illuminate\Routing\Controller') return false;
 
-    /**
-     * Get the method data for a given method.
-     *
-     * @param  \ReflectionMethod  $method
-     * @param  string  $prefix
-     * @return array
-     */
-    public function getMethodData(ReflectionMethod $method, $prefix)
-    {
-        $verb = $this->getVerb($name = $method->name);
+		return starts_with($method->name, $this->verbs);
+	}
 
-        $uri = $this->addUriWildcards($plain = $this->getPlainUri($name, $prefix));
+	/**
+	 * Get the method data for a given method.
+	 *
+	 * @param  \ReflectionMethod  $method
+	 * @param  string  $prefix
+	 * @return array
+	 */
+	public function getMethodData(ReflectionMethod $method, $prefix)
+	{
+		$verb = $this->getVerb($name = $method->name);
 
-        return compact('verb', 'plain', 'uri');
-    }
+		$uri = $this->addUriWildcards($plain = $this->getPlainUri($name, $prefix));
 
-    /**
-     * Get the routable data for an index method.
-     *
-     * @param  array   $data
-     * @param  string  $prefix
-     * @return array
-     */
-    protected function getIndexData($data, $prefix)
-    {
-        return ['verb' => $data['verb'], 'plain' => $prefix, 'uri' => $prefix];
-    }
+		return compact('verb', 'plain', 'uri');
+	}
 
-    /**
-     * Extract the verb from a controller action.
-     *
-     * @param  string  $name
-     * @return string
-     */
-    public function getVerb($name)
-    {
-        return head(explode('_', Str::snake($name)));
-    }
+	/**
+	 * Get the routable data for an index method.
+	 *
+	 * @param  array   $data
+	 * @param  string  $prefix
+	 * @return array
+	 */
+	protected function getIndexData($data, $prefix)
+	{
+		return array('verb' => $data['verb'], 'plain' => $prefix, 'uri' => $prefix);
+	}
 
-    /**
-     * Determine the URI from the given method name.
-     *
-     * @param  string  $name
-     * @param  string  $prefix
-     * @return string
-     */
-    public function getPlainUri($name, $prefix)
-    {
-        return $prefix.'/'.implode('-', array_slice(explode('_', Str::snake($name)), 1));
-    }
+	/**
+	 * Extract the verb from a controller action.
+	 *
+	 * @param  string  $name
+	 * @return string
+	 */
+	public function getVerb($name)
+	{
+		return head(explode('_', snake_case($name)));
+	}
 
-    /**
-     * Add wildcards to the given URI.
-     *
-     * @param  string  $uri
-     * @return string
-     */
-    public function addUriWildcards($uri)
-    {
-        return $uri.'/{one?}/{two?}/{three?}/{four?}/{five?}';
-    }
+	/**
+	 * Determine the URI from the given method name.
+	 *
+	 * @param  string  $name
+	 * @param  string  $prefix
+	 * @return string
+	 */
+	public function getPlainUri($name, $prefix)
+	{
+		return $prefix.'/'.implode('-', array_slice(explode('_', snake_case($name)), 1));
+	}
+
+	/**
+	 * Add wildcards to the given URI.
+	 *
+	 * @param  string  $uri
+	 * @return string
+	 */
+	public function addUriWildcards($uri)
+	{
+		return $uri.'/{one?}/{two?}/{three?}/{four?}/{five?}';
+	}
+
 }

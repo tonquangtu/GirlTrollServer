@@ -3,7 +3,7 @@
 /*
  * This file is part of Class Preloader.
  *
- * (c) Graham Campbell <graham@alt-three.com>
+ * (c) Graham Campbell <graham@cachethq.io>
  * (c) Michael Dowling <mtdowling@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -11,6 +11,9 @@
  */
 
 namespace ClassPreloader;
+
+require_once __DIR__.'/ClassNode.php';
+require_once __DIR__.'/ClassList.php';
 
 /**
  * This is the class loader class.
@@ -29,7 +32,7 @@ class ClassLoader
     public $classList;
 
     /**
-     * Create a new class loader instance.
+     * Create a new class loader.
      *
      * @return void
      */
@@ -78,7 +81,7 @@ class ClassLoader
      */
     public function register()
     {
-        spl_autoload_register([$this, 'loadClass'], true, true);
+        spl_autoload_register(array($this, 'loadClass'), true, true);
     }
 
     /**
@@ -88,7 +91,7 @@ class ClassLoader
      */
     public function unregister()
     {
-        spl_autoload_unregister([$this, 'loadClass']);
+        spl_autoload_unregister(array($this, 'loadClass'));
     }
 
     /**
@@ -98,7 +101,7 @@ class ClassLoader
      *
      * @param string $class
      *
-     * @return bool
+     * @return bool|null
      */
     public function loadClass($class)
     {
@@ -124,7 +127,7 @@ class ClassLoader
      */
     public function getFilenames()
     {
-        $files = [];
+        $files = array();
         foreach ($this->classList->getClasses() as $class) {
             // Push interfaces before classes if not already loaded
             try {
@@ -139,9 +142,17 @@ class ClassLoader
                     $files[] = $r->getFileName();
                 }
             } catch (\ReflectionException $e) {
-                // We ignore all exceptions related to reflection because in
-                // some cases class doesn't need to exist. We're ignoring all
-                // problems with classes, interfaces and traits.
+                // We ignore all exceptions related to reflection,
+                // because in some cases class can't exists. This
+                // can be if you use in your code constructions like
+                //
+                // if (class_exists('SomeClass')) { // <-- here will trigger autoload
+                //      class SomeSuperClass extends SomeClass {
+                //      }
+                // }
+                //
+                // We ignore all problems with classes, interfaces and
+                // traits.
             }
         }
 

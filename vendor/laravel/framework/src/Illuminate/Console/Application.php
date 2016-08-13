@@ -1,6 +1,4 @@
-<?php
-
-namespace Illuminate\Console;
+<?php namespace Illuminate\Console;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Container\Container;
@@ -11,162 +9,159 @@ use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Illuminate\Contracts\Console\Application as ApplicationContract;
 
-class Application extends SymfonyApplication implements ApplicationContract
-{
-    /**
-     * The Laravel application instance.
-     *
-     * @var \Illuminate\Contracts\Container\Container
-     */
-    protected $laravel;
+class Application extends SymfonyApplication implements ApplicationContract {
 
-    /**
-     * The output from the previous command.
-     *
-     * @var \Symfony\Component\Console\Output\BufferedOutput
-     */
-    protected $lastOutput;
+	/**
+	 * The Laravel application instance.
+	 *
+	 * @var \Illuminate\Contracts\Container\Container
+	 */
+	protected $laravel;
 
-    /**
-     * Create a new Artisan console application.
-     *
-     * @param  \Illuminate\Contracts\Container\Container  $laravel
-     * @param  \Illuminate\Contracts\Events\Dispatcher  $events
-     * @param  string  $version
-     * @return void
-     */
-    public function __construct(Container $laravel, Dispatcher $events, $version)
-    {
-        parent::__construct('Laravel Framework', $version);
+	/**
+	 * The output from the previous command.
+	 *
+	 * @var \Symfony\Component\Console\Output\BufferedOutput
+	 */
+	protected $lastOutput;
 
-        $this->laravel = $laravel;
-        $this->setAutoExit(false);
-        $this->setCatchExceptions(false);
+	/**
+	 * Create a new Artisan console application.
+	 *
+	 * @param  \Illuminate\Contracts\Container\Container  $laravel
+	 * @param  \Illuminate\Contracts\Events\Dispatcher  $events
+	 * @param  string  $version
+	 * @return void
+	 */
+	public function __construct(Container $laravel, Dispatcher $events, $version)
+	{
+		parent::__construct('Laravel Framework', $version);
 
-        $events->fire(new Events\ArtisanStarting($this));
-    }
+		$this->laravel = $laravel;
+		$this->setAutoExit(false);
+		$this->setCatchExceptions(false);
 
-    /**
-     * Run an Artisan console command by name.
-     *
-     * @param  string  $command
-     * @param  array  $parameters
-     * @return int
-     */
-    public function call($command, array $parameters = [])
-    {
-        $parameters = collect($parameters)->prepend($command);
+		$events->fire('artisan.start', [$this]);
+	}
 
-        $this->lastOutput = new BufferedOutput;
+	/**
+	 * Run an Artisan console command by name.
+	 *
+	 * @param  string  $command
+	 * @param  array  $parameters
+	 * @return int
+	 */
+	public function call($command, array $parameters = array())
+	{
+		$parameters['command'] = $command;
 
-        $this->setCatchExceptions(false);
+		$this->lastOutput = new BufferedOutput;
 
-        $result = $this->run(new ArrayInput($parameters->toArray()), $this->lastOutput);
+		return $this->find($command)->run(new ArrayInput($parameters), $this->lastOutput);
+	}
 
-        $this->setCatchExceptions(true);
+	/**
+	 * Get the output for the last run command.
+	 *
+	 * @return string
+	 */
+	public function output()
+	{
+		return $this->lastOutput ? $this->lastOutput->fetch() : '';
+	}
 
-        return $result;
-    }
+	/**
+	 * Add a command to the console.
+	 *
+	 * @param  \Symfony\Component\Console\Command\Command  $command
+	 * @return \Symfony\Component\Console\Command\Command
+	 */
+	public function add(SymfonyCommand $command)
+	{
+		if ($command instanceof Command)
+		{
+			$command->setLaravel($this->laravel);
+		}
 
-    /**
-     * Get the output for the last run command.
-     *
-     * @return string
-     */
-    public function output()
-    {
-        return $this->lastOutput ? $this->lastOutput->fetch() : '';
-    }
+		return $this->addToParent($command);
+	}
 
-    /**
-     * Add a command to the console.
-     *
-     * @param  \Symfony\Component\Console\Command\Command  $command
-     * @return \Symfony\Component\Console\Command\Command
-     */
-    public function add(SymfonyCommand $command)
-    {
-        if ($command instanceof Command) {
-            $command->setLaravel($this->laravel);
-        }
+	/**
+	 * Add the command to the parent instance.
+	 *
+	 * @param  \Symfony\Component\Console\Command\Command  $command
+	 * @return \Symfony\Component\Console\Command\Command
+	 */
+	protected function addToParent(SymfonyCommand $command)
+	{
+		return parent::add($command);
+	}
 
-        return $this->addToParent($command);
-    }
+	/**
+	 * Add a command, resolving through the application.
+	 *
+	 * @param  string  $command
+	 * @return \Symfony\Component\Console\Command\Command
+	 */
+	public function resolve($command)
+	{
+		return $this->add($this->laravel->make($command));
+	}
 
-    /**
-     * Add the command to the parent instance.
-     *
-     * @param  \Symfony\Component\Console\Command\Command  $command
-     * @return \Symfony\Component\Console\Command\Command
-     */
-    protected function addToParent(SymfonyCommand $command)
-    {
-        return parent::add($command);
-    }
+	/**
+	 * Resolve an array of commands through the application.
+	 *
+	 * @param  array|mixed  $commands
+	 * @return $this
+	 */
+	public function resolveCommands($commands)
+	{
+		$commands = is_array($commands) ? $commands : func_get_args();
 
-    /**
-     * Add a command, resolving through the application.
-     *
-     * @param  string  $command
-     * @return \Symfony\Component\Console\Command\Command
-     */
-    public function resolve($command)
-    {
-        return $this->add($this->laravel->make($command));
-    }
+		foreach ($commands as $command)
+		{
+			$this->resolve($command);
+		}
 
-    /**
-     * Resolve an array of commands through the application.
-     *
-     * @param  array|mixed  $commands
-     * @return $this
-     */
-    public function resolveCommands($commands)
-    {
-        $commands = is_array($commands) ? $commands : func_get_args();
+		return $this;
+	}
 
-        foreach ($commands as $command) {
-            $this->resolve($command);
-        }
+	/**
+	 * Get the default input definitions for the applications.
+	 *
+	 * This is used to add the --env option to every available command.
+	 *
+	 * @return \Symfony\Component\Console\Input\InputDefinition
+	 */
+	protected function getDefaultInputDefinition()
+	{
+		$definition = parent::getDefaultInputDefinition();
 
-        return $this;
-    }
+		$definition->addOption($this->getEnvironmentOption());
 
-    /**
-     * Get the default input definitions for the applications.
-     *
-     * This is used to add the --env option to every available command.
-     *
-     * @return \Symfony\Component\Console\Input\InputDefinition
-     */
-    protected function getDefaultInputDefinition()
-    {
-        $definition = parent::getDefaultInputDefinition();
+		return $definition;
+	}
 
-        $definition->addOption($this->getEnvironmentOption());
+	/**
+	 * Get the global environment option for the definition.
+	 *
+	 * @return \Symfony\Component\Console\Input\InputOption
+	 */
+	protected function getEnvironmentOption()
+	{
+		$message = 'The environment the command should run under.';
 
-        return $definition;
-    }
+		return new InputOption('--env', null, InputOption::VALUE_OPTIONAL, $message);
+	}
 
-    /**
-     * Get the global environment option for the definition.
-     *
-     * @return \Symfony\Component\Console\Input\InputOption
-     */
-    protected function getEnvironmentOption()
-    {
-        $message = 'The environment the command should run under.';
+	/**
+	 * Get the Laravel application instance.
+	 *
+	 * @return \Illuminate\Contracts\Foundation\Application
+	 */
+	public function getLaravel()
+	{
+		return $this->laravel;
+	}
 
-        return new InputOption('--env', null, InputOption::VALUE_OPTIONAL, $message);
-    }
-
-    /**
-     * Get the Laravel application instance.
-     *
-     * @return \Illuminate\Contracts\Foundation\Application
-     */
-    public function getLaravel()
-    {
-        return $this->laravel;
-    }
 }

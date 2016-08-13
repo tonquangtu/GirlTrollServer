@@ -1,126 +1,126 @@
-<?php
-
-namespace Illuminate\Console\Scheduling;
+<?php namespace Illuminate\Console\Scheduling;
 
 use LogicException;
 use InvalidArgumentException;
 use Illuminate\Contracts\Container\Container;
 
-class CallbackEvent extends Event
-{
-    /**
-     * The callback to call.
-     *
-     * @var string
-     */
-    protected $callback;
+class CallbackEvent extends Event {
 
-    /**
-     * The parameters to pass to the method.
-     *
-     * @var array
-     */
-    protected $parameters;
+	/**
+	 * The callback to call.
+	 *
+	 * @var string
+	 */
+	protected $callback;
 
-    /**
-     * Create a new event instance.
-     *
-     * @param  string  $callback
-     * @param  array  $parameters
-     * @return void
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function __construct($callback, array $parameters = [])
-    {
-        if (! is_string($callback) && ! is_callable($callback)) {
-            throw new InvalidArgumentException(
-                'Invalid scheduled callback event. Must be string or callable.'
-            );
-        }
+	/**
+	 * The parameters to pass to the method.
+	 *
+	 * @var array
+	 */
+	protected $parameters;
 
-        $this->callback = $callback;
-        $this->parameters = $parameters;
-    }
+	/**
+	 * Create a new event instance.
+	 *
+	 * @param  string  $callback
+	 * @param  array  $parameters
+	 * @return void
+	 */
+	public function __construct($callback, array $parameters = array())
+	{
+		$this->callback = $callback;
+		$this->parameters = $parameters;
 
-    /**
-     * Run the given event.
-     *
-     * @param  \Illuminate\Contracts\Container\Container  $container
-     * @return mixed
-     *
-     * @throws \Exception
-     */
-    public function run(Container $container)
-    {
-        if ($this->description) {
-            touch($this->mutexPath());
-        }
+		if ( ! is_string($this->callback) && ! is_callable($this->callback))
+		{
+			throw new InvalidArgumentException(
+				"Invalid scheduled callback event. Must be string or callable."
+			);
+		}
+	}
 
-        try {
-            $response = $container->call($this->callback, $this->parameters);
-        } finally {
-            $this->removeMutex();
-        }
+	/**
+	 * Run the given event.
+	 *
+	 * @param  \Illuminate\Contracts\Container\Container  $container
+	 * @return mixed
+	 */
+	public function run(Container $container)
+	{
+		if ($this->description)
+		{
+			touch($this->mutexPath());
+		}
 
-        parent::callAfterCallbacks($container);
+		try {
+			$response = $container->call($this->callback, $this->parameters);
+		} catch (\Exception $e) {
+			$this->removeMutex();
 
-        return $response;
-    }
+			throw $e;
+		}
 
-    /**
-     * Remove the mutex file from disk.
-     *
-     * @return void
-     */
-    protected function removeMutex()
-    {
-        if ($this->description) {
-            @unlink($this->mutexPath());
-        }
-    }
+		$this->removeMutex();
 
-    /**
-     * Do not allow the event to overlap each other.
-     *
-     * @return $this
-     *
-     * @throws \LogicException
-     */
-    public function withoutOverlapping()
-    {
-        if (! isset($this->description)) {
-            throw new LogicException(
-                "A scheduled event name is required to prevent overlapping. Use the 'name' method before 'withoutOverlapping'."
-            );
-        }
+		parent::callAfterCallbacks($container);
 
-        return $this->skip(function () {
-            return file_exists($this->mutexPath());
-        });
-    }
+		return $response;
+	}
 
-    /**
-     * Get the mutex path for the scheduled command.
-     *
-     * @return string
-     */
-    protected function mutexPath()
-    {
-        return storage_path('framework/schedule-'.sha1($this->description));
-    }
+	/**
+	 * Remove the mutex file from disk.
+	 *
+	 * @return void
+	 */
+	protected function removeMutex()
+	{
+		if ($this->description)
+		{
+			@unlink($this->mutexPath());
+		}
+	}
 
-    /**
-     * Get the summary of the event for display.
-     *
-     * @return string
-     */
-    public function getSummaryForDisplay()
-    {
-        if (is_string($this->description)) {
-            return $this->description;
-        }
+	/**
+	 * Do not allow the event to overlap each other.
+	 *
+	 * @return $this
+	 */
+	public function withoutOverlapping()
+	{
+		if ( ! isset($this->description))
+		{
+			throw new LogicException(
+				"A scheduled event name is required to prevent overlapping. Use the 'name' method before 'withoutOverlapping'."
+			);
+		}
 
-        return is_string($this->callback) ? $this->callback : 'Closure';
-    }
+		return $this->skip(function()
+		{
+			return file_exists($this->mutexPath());
+		});
+	}
+
+	/**
+	 * Get the mutex path for the scheduled command.
+	 *
+	 * @return string
+	 */
+	protected function mutexPath()
+	{
+		return storage_path().'/framework/schedule-'.md5($this->description);
+	}
+
+	/**
+	 * Get the summary of the event for display.
+	 *
+	 * @return string
+	 */
+	public function getSummaryForDisplay()
+	{
+		if (is_string($this->description)) return $this->description;
+
+		return is_string($this->callback) ? $this->callback : 'Closure';
+	}
+
 }
