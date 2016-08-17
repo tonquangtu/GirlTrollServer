@@ -19,3 +19,38 @@ Route::controllers([
 	'auth' => 'Auth\AuthController',
 	'password' => 'Auth\PasswordController',
 ]);
+
+/**
+ * Save account if not exist
+ */
+Route::resource('login','LoginController',['only'=>'store']);
+
+/**
+ * Get feed
+ */
+Route::get('feed',['as'=>'getFeed', 'uses'=>'FeedController@getFeed']);
+
+// /**
+//  * Get new feed
+//  */
+// Route::get('feed/new',['as'=>'feedNew', 'uses'=>'FeedController@getNew']);
+
+/**
+ * Save a new feed
+ */
+Route::resource('feed','FeedController',['only'=>'store']);
+
+/**
+ * Get list Cover Image
+ */
+Route::get('coverimage',['as'=>'coverImage','uses'=>'CoverImageController@getCoverImage']);
+
+/**
+ * Save a userevent when use complete event
+ */
+Route::post('event/complete',['as'=>'eventcomplete','uses'=>'EventController@postEventComplete']);
+
+/**
+ * Get list event, Get information event
+ */
+Route::resource('event','EventController',['only'=>['index','show']]);
