@@ -8,7 +8,7 @@ use App\Feed;
 use Response;
 use Image;
 use App\Image as ImageModel;
-use App\Video;
+use App\Video, App\Member;
 
 class FeedController extends Controller {
 
@@ -60,7 +60,7 @@ class FeedController extends Controller {
 				if($request->hasFile('file_'.$i)){
 					$image = $request->file('file_'.$i);
 					$imagename = time().'.'.$image->getClientOriginalExtension();
-					resizeImagePost($image, $imagename, $width, $height, $pathImg, $pathThumb);
+					$this->resizeImagePost($image, $imagename, $width, $height, $pathImg, $pathThumb);
 
 					$img = new ImageModel;	
 					$img->url_image = $pathImg.'/'.$imagename;
@@ -229,6 +229,10 @@ class FeedController extends Controller {
 			]
 		];
 		return Response::json($send);
+	}
+
+	public function testPostFeed(){
+		return view('testPostFeed');
 	}
 
 }
