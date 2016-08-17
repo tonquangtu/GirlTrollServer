@@ -55,22 +55,23 @@ class FeedController extends Controller {
 			$pathImg = 'public/image';
 			$pathThumb = 'public/image/thumbnail';
 			$count = 0;
+
 			//Upload feed image
 			for($i=0; $i<$totalFile; $i++){
-				if($request->hasFile('file_'.$i)){
-					$image = $request->file('file_'.$i);
-					$imagename = time().'.'.$image->getClientOriginalExtension();
-					$this->resizeImagePost($image, $imagename, $width, $height, $pathImg, $pathThumb);
+				$files[] = $request->file('file_'.$i);
+			}
+			foreach($files as $image){
+				$imagename = changeTitle($image->getClientOriginalName());
+				$this->resizeImagePost($image, $imagename, $width, $height, $pathImg, $pathThumb);
 
-					$img = new ImageModel;	
-					$img->url_image = $pathImg.'/'.$imagename;
-					$img->type = $typeImage;
-					$img->link_face = $linkFace;
-					$img->feed_id = $feed->id;
-					$img->url_image_thumbnail = $pathThumb.'/'.$imagename;
-					$img->save();
-					$count++;
-				}
+				$img = new ImageModel;	
+				$img->url_image = $pathImg.'/'.$imagename;
+				$img->type = $typeImage;
+				$img->link_face = $linkFace;
+				$img->feed_id = $feed->id;
+				$img->url_image_thumbnail = $pathThumb.'/'.$imagename;
+				$img->save();
+				$count++;
 			}
 
 			if($count!=$totalFile){
@@ -88,11 +89,10 @@ class FeedController extends Controller {
 
 			if($request->hasFile('file')){
 				$video = $request->file('file');
-				$videoname = time().'.'.$image->getClientOriginalExtension();
+				$videoname = changeTitle($image->getClientOriginalName());
 				$pathVideo = 'public/video';
 				$video->move($pathVideo, $videoname);
 
-				//['id','url_video','type','feed_id']
 				$vde = new Video;
 				$vde->url_video = $pathVideo.'/'.$videoname;
 				$vde->type = $typeVideo;
@@ -156,6 +156,12 @@ class FeedController extends Controller {
 	}
 
 
+	/**
+	 * Get Feed
+	 * @param  Request $request 
+	 * @param  string  $order   attribute to order by
+	 * @return Response          
+	 */
 	public function getFeed(Request $request, $order){
 		// Get data from client
 		$currentFeedId = (int)$request->input('currentFeedId');
@@ -231,8 +237,13 @@ class FeedController extends Controller {
 		return Response::json($send);
 	}
 
-	public function testPostFeed(){
-		return view('testPostFeed');
-	}
+
+	/**
+	 * Test Post Feed
+	 * @return view
+	 */
+	// public function testPostFeed(){
+	// 	return view('testPostFeed');
+	// }
 
 }
