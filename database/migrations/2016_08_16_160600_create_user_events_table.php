@@ -13,11 +13,15 @@ class CreateUserEventsTable extends Migration {
 	public function up()
 	{
 		Schema::create('user_event', function(Blueprint $table)
-		{
-			$table->integer('eventId')->length(11);
-			$table->string('memberId')->length(100);
-			$table->integer('imageId')->length(11);
+		{	
+			$table->increments('id');
+			$table->integer('event_id')->unsigned();
+			$table->integer('member_id')->unsigned();
+			$table->integer('image_id')->unsigned();
 			// $table->timestamps();
+			$table->foreign('event_id')->references('id')->on('event');
+			$table->foreign('member_id')->references('id')->on('member');
+			$table->foreign('image_id')->references('id')->on('image');
 		});
 	}
 

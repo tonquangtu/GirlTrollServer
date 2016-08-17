@@ -26,14 +26,14 @@ Route::controllers([
 Route::resource('login','LoginController',['only'=>'store']);
 
 /**
- * Get feed
+ * Get new feed
  */
-Route::get('feed',['as'=>'getFeed', 'uses'=>'FeedController@getFeed']);
+Route::get('feed/new',['as'=>'getNewFeed', 'uses'=>'FeedController@getNewFeed']);
 
-// /**
-//  * Get new feed
-//  */
-// Route::get('feed/new',['as'=>'feedNew', 'uses'=>'FeedController@getNew']);
+/**
+ * Get top feed
+ */
+Route::get('feed/top',['as'=>'getTopFeed', 'uses'=>'FeedController@getTopFeed']);
 
 /**
  * Save a new feed

@@ -12,17 +12,17 @@ class CreateEventsTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('events', function(Blueprint $table)
+		Schema::create('event', function(Blueprint $table)
 		{
-			$table->increments('eventId')->length(11);
+			$table->increments('id');
 			$table->text('title');
-			$table->text('sortContent');
+			$table->text('sort_content');
 			$table->text('content');
 			$table->smallInteger('type')->length(6);
 			$table->text('policy');
 			$table->tinyInteger('active');
-			$table->datetime('timeStart');
-			$table->datetime('timeEnd');
+			$table->datetime('time_start');
+			$table->datetime('time_end');
 			// $table->timestamps();
 		});
 	}
@@ -34,7 +34,7 @@ class CreateEventsTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('events');
+		Schema::drop('event');
 	}
 
 }

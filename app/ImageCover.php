@@ -5,6 +5,6 @@ use Illuminate\Database\Eloquent\Model;
 class ImageCover extends Model {
 
 	protected $table="image_cover";
-	protected $fillable = ['imageId','title','urlImage'];
-
+	protected $fillable = ['id','title','url_image'];
+	public $timestamps = false;
 }

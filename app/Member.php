@@ -14,8 +14,9 @@ class Member extends Model {
 	 * Attribute to show
 	 * @var array
 	 */
-	protected $fillable=['memberId', 'username','rank','like','avatarUrl','totalImage'];
+	protected $fillable=['id','member_id', 'username','rank','like','avatar_url','total_image'];
 
+	public $timestamps = false;
 	public function feed(){
 		return $this->hasMany('App\Feed');
 	}

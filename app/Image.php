@@ -5,8 +5,8 @@ use Illuminate\Database\Eloquent\Model;
 class Image extends Model {
 
 	protected $table="image";
-	protected $fillable=['imageId','urlImage','type','linkFace','feedId','urlImageThumbnail'];
-
+	protected $fillable=['id','url_image','type','link_face','feed_id','url_image_thumbnail'];
+	public $timestamps = false;
 	public function feed(){
 		return $this->belongsTo('App\Feed');
 	}

@@ -14,11 +14,12 @@ class CreateVideosTable extends Migration {
 	{
 		Schema::create('video', function(Blueprint $table)
 		{
-			$table->increments('videoId')->length(11);
-			$table->text('urlVideo');
+			$table->increments('id');
+			$table->text('url_video');
 			$table->tinyInteger('type');
-			$table->integer('feedId');
+			$table->integer('feed_id')->unsigned();
 			// $table->timestamps();
+			$table->foreign('feed_id')->references('id')->on('feed');
 		});
 	}
 

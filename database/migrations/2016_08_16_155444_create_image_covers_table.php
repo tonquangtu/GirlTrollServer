@@ -14,9 +14,9 @@ class CreateImageCoversTable extends Migration {
 	{
 		Schema::create('image_cover', function(Blueprint $table)
 		{
-			$table->increments('imageId')->length(11);
+			$table->increments('id');
 			$table->text('title');
-			$table->text('urlImage');
+			$table->text('url_image');
 			// $table->timestamps();
 		});
 	}

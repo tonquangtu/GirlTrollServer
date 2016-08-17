@@ -5,8 +5,9 @@ use Illuminate\Database\Eloquent\Model;
 class UserEvent extends Model {
 
 	protected $table="user_event";
-	protected $fillable=['eventId','memberId','imageId'];
+	protected $fillable=['id','member_id','image_id', 'event_id'];
 
+	public $timestamps = false;
 	public function member(){
 		return $this->belongsTo('App\Member');
 	}

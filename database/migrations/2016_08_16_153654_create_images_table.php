@@ -14,13 +14,14 @@ class CreateImagesTable extends Migration {
 	{
 		Schema::create('image', function(Blueprint $table)
 		{
-			$table->increments('imageId')->length(11);
-			$table->text('urlImage');
+			$table->increments('id');
+			$table->text('url_image');
 			$table->integer('type')->length(11);
-			$table->string('linkFace')->length(255);
-			$table->integer('feedId')->length(11);
-			$table->text('urlImageThumbnail');
+			$table->string('link_face')->length(255);
+			$table->text('url_image_thumbnail');
+			$table->integer('feed_id')->unsigned();
 			// $table->timestamps();
+			$table->foreign('feed_id')->references('id')->on('feed');
 		});
 	}
 

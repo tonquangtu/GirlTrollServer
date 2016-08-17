@@ -15,23 +15,23 @@ class LoginController extends Controller {
 	 */
 	public function store(Request $request)
 	{
-		$member = Member::where('memberId','=',$request->input('memberId'))->first();
-		if(isset($member->memberId)){
+		$member = Member::where('member_id','=',$request->input('memberId'))->first();
+		if(isset($member->id)){
 			$success = 0;
 		}else {
 			$member = new Member;
-			$member->memberId = $request->input('memberId');
+			$member->member_id = $request->input('memberId');
 			$member->username = $request->input('username');
 			$member->rank = 0;
 			$member->like = 0;
-			$member->totalImage = 0;
+			$member->total_image = 0;
 			$member->save();
 			$success = 1;
 		}
 		$data = [
 			'rank'=>$member->rank,
 			'like'=>$member->like,
-			'totalImage' => $member->totalImage	
+			'totalImage' => $member->total_image	
 		];
 		$send = [
 			'success'=>$success,

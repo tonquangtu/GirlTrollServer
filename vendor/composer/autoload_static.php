@@ -15,6 +15,7 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
         'bd9634f2d41831496de0d3dfe4c94881' => __DIR__ . '/..' . '/symfony/polyfill-php56/bootstrap.php',
         'e7223560d890eab89cda23685e711e2c' => __DIR__ . '/..' . '/psy/psysh/src/Psy/functions.php',
         '65fec9ebcfbb3cbb4fd0d519687aea01' => __DIR__ . '/..' . '/danielstjules/stringy/src/Create.php',
+        'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
         'f0906e6318348a765ffb6eb24e0d0938' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/helpers.php',
         '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
     );
@@ -42,6 +43,10 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
             'SuperClosure\\' => 13,
             'Stringy\\' => 8,
         ),
+        'P' => 
+        array (
+            'Psr\\Http\\Message\\' => 17,
+        ),
         'M' => 
         array (
             'Monolog\\' => 8,
@@ -52,7 +57,16 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
         ),
         'I' => 
         array (
+            'Intervention\\Image\\' => 19,
             'Illuminate\\' => 11,
+        ),
+        'G' => 
+        array (
+            'GuzzleHttp\\Psr7\\' => 16,
+        ),
+        'F' => 
+        array (
+            'Faker\\' => 6,
         ),
         'D' => 
         array (
@@ -112,6 +126,10 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
         array (
             0 => __DIR__ . '/..' . '/danielstjules/stringy/src',
         ),
+        'Psr\\Http\\Message\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/http-message/src',
+        ),
         'Monolog\\' => 
         array (
             0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
@@ -120,9 +138,21 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
         array (
             0 => __DIR__ . '/..' . '/league/flysystem/src',
         ),
+        'Intervention\\Image\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/intervention/image/src/Intervention/Image',
+        ),
         'Illuminate\\' => 
         array (
             0 => __DIR__ . '/..' . '/laravel/framework/src/Illuminate',
+        ),
+        'GuzzleHttp\\Psr7\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/guzzlehttp/psr7/src',
+        ),
+        'Faker\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/fzaninotto/faker/src/Faker',
         ),
         'Doctrine\\Instantiator\\' => 
         array (
@@ -241,13 +271,21 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
     );
 
     public static $classMap = array (
-        'CreatePasswordResetsTable' => __DIR__ . '/../..' . '/database/migrations/2014_10_12_100000_create_password_resets_table.php',
-        'CreateUsersTable' => __DIR__ . '/../..' . '/database/migrations/2014_10_12_000000_create_users_table.php',
+        'CreateEventsTable' => __DIR__ . '/../..' . '/database/migrations/2016_08_16_183621_create_events_table.php',
+        'CreateFeedsTable' => __DIR__ . '/../..' . '/database/migrations/2016_08_16_154509_create_feeds_table.php',
+        'CreateImageCoversTable' => __DIR__ . '/../..' . '/database/migrations/2016_08_16_155444_create_image_covers_table.php',
+        'CreateImagesTable' => __DIR__ . '/../..' . '/database/migrations/2016_08_16_153654_create_images_table.php',
+        'CreateMembersTable' => __DIR__ . '/../..' . '/database/migrations/2016_08_16_145800_create_members_table.php',
+        'CreateUserEventsTable' => __DIR__ . '/../..' . '/database/migrations/2016_08_16_160600_create_user_events_table.php',
+        'CreateVideosTable' => __DIR__ . '/../..' . '/database/migrations/2016_08_16_155021_create_videos_table.php',
         'DatabaseSeeder' => __DIR__ . '/../..' . '/database/seeds/DatabaseSeeder.php',
+        'FeedTableSeeder' => __DIR__ . '/../..' . '/database/seeds/FeedTableSeeder.php',
         'File_Iterator' => __DIR__ . '/..' . '/phpunit/php-file-iterator/src/Iterator.php',
         'File_Iterator_Facade' => __DIR__ . '/..' . '/phpunit/php-file-iterator/src/Facade.php',
         'File_Iterator_Factory' => __DIR__ . '/..' . '/phpunit/php-file-iterator/src/Factory.php',
         'IlluminateQueueClosure' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Queue/IlluminateQueueClosure.php',
+        'ImageTableSeeder' => __DIR__ . '/../..' . '/database/seeds/ImageTableSeeder.php',
+        'MemberTableSeeder' => __DIR__ . '/../..' . '/database/seeds/MemberTableSeeder.php',
         'PHPUnit_Exception' => __DIR__ . '/..' . '/phpunit/phpunit/src/Exception.php',
         'PHPUnit_Extensions_GroupTestSuite' => __DIR__ . '/..' . '/phpunit/phpunit/src/Extensions/GroupTestSuite.php',
         'PHPUnit_Extensions_PhptTestCase' => __DIR__ . '/..' . '/phpunit/phpunit/src/Extensions/PhptTestCase.php',
