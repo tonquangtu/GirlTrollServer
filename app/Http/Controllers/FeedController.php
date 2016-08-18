@@ -74,6 +74,10 @@ class FeedController extends Controller {
 				$count++;
 			}
 
+			// Add number image to member
+			$member->first()->total_image += $count;
+			$member->first()->save();
+
 			if($count!=$totalFile){
 				$success = 0;
 				$message = "Insert Image Not Enough";
@@ -186,17 +190,27 @@ class FeedController extends Controller {
 						'type'     => $vde->type
 					];
 				}
+				
+				$mem = $item->member()->first();
+				$member= array();
+				$member['memberId']   =$mem->member_id;
+				$member['username']   =$mem->username;
+				$member['rank']       =$mem->rank;
+				$member['like']       =$mem->like;
+				$member['avatarUrl']  =$mem->avatar_url;
+				$member['totalImage'] =$mem->total_image ;
+
 				$mdata = array();
-				$mdata['feedId']   = $item->id;
-				$mdata['memberId'] = $item->member()->first()->member_id;
-				$mdata['title']    = $item->title;
-				$mdata['time']     = $item->time;
-				$mdata['like']     = $item->like;
-				$mdata['comment']  = $item->comment;
-				$mdata['share']    = $item->share;
-				$mdata['school']   = $item->school;
-				$mdata['images']   = $images;
-				$mdata['videos']   = $videos;
+				$mdata['feedId']  = $item->id;
+				$mdata['title']   = $item->title;
+				$mdata['time']    = $item->time;
+				$mdata['like']    = $item->like;
+				$mdata['comment'] = $item->comment;
+				$mdata['share']   = $item->share;
+				$mdata['school']  = $item->school;
+				$mdata['images']  = $images;
+				$mdata['videos']  = $videos;
+				$mdata['member']  = $member;
 
 				$data[] = $mdata;
 			}
@@ -262,9 +276,18 @@ class FeedController extends Controller {
 						'type'     => $vde->type
 					];
 				}
+
+				$mem = $item->member()->first();
+				$member= array();
+				$member['memberId']   =$mem->member_id;
+				$member['username']   =$mem->username;
+				$member['rank']       =$mem->rank;
+				$member['like']       =$mem->like;
+				$member['avatarUrl']  =$mem->avatar_url;
+				$member['totalImage'] =$mem->total_image ;
+
 				$mdata = array();
 				$mdata['feedId']   = $item->id;
-				$mdata['memberId'] = $item->member()->first()->member_id;
 				$mdata['title']    = $item->title;
 				$mdata['time']     = $item->time;
 				$mdata['like']     = $item->like;
@@ -273,6 +296,7 @@ class FeedController extends Controller {
 				$mdata['school']   = $item->school;
 				$mdata['images']   = $images;
 				$mdata['videos']   = $videos;
+				$mdata['member']   = $member;
 
 				$data[] = $mdata;
 				$afterListIdUsed .=','.$item->id;
