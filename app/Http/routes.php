@@ -34,6 +34,7 @@ Route::get('feed/new',['as'=>'getNewFeed', 'uses'=>'FeedController@getNewFeed'])
  * Get top feed
  */
 Route::get('feed/top',['as'=>'getTopFeed', 'uses'=>'FeedController@getTopFeed']);
+Route::post('feed/top',['as'=>'getTopFeed', 'uses'=>'FeedController@getTopFeed']);
 
 /**
  * Save a new feed
