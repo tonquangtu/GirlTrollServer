@@ -60,4 +60,4 @@ Route::resource('event','EventController',['only'=>['index','show']]);
 /**
  * Test Post Feed
  */
-// Route::get('testPostFeed','FeedController@testPostFeed');
+Route::get('testPostFeed','FeedController@testPostFeed');

@@ -242,8 +242,8 @@ class FeedController extends Controller {
 	 * Test Post Feed
 	 * @return view
 	 */
-	// public function testPostFeed(){
-	// 	return view('testPostFeed');
-	// }
+	public function testPostFeed(){
+		return view('testPostFeed');
+	}
 
 }
