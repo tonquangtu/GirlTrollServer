@@ -44,6 +44,7 @@ Route::resource('feed','FeedController',['only'=>'store']);
  * Get list Cover Image
  */
 Route::get('coverimage',['as'=>'coverImage','uses'=>'CoverImageController@getCoverImage']);
+Route::post('coverimage',['as'=>'coverImage','uses'=>'CoverImageController@getCoverImage']);
 
 /**
  * Save a userevent when use complete event
