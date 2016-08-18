@@ -285,6 +285,7 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
         'File_Iterator_Facade' => __DIR__ . '/..' . '/phpunit/php-file-iterator/src/Facade.php',
         'File_Iterator_Factory' => __DIR__ . '/..' . '/phpunit/php-file-iterator/src/Factory.php',
         'IlluminateQueueClosure' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Queue/IlluminateQueueClosure.php',
+        'ImageCoverTableSeeder' => __DIR__ . '/../..' . '/database/seeds/ImageCoverTableSeeder.php',
         'ImageTableSeeder' => __DIR__ . '/../..' . '/database/seeds/ImageTableSeeder.php',
         'MemberTableSeeder' => __DIR__ . '/../..' . '/database/seeds/MemberTableSeeder.php',
         'PHPUnit_Exception' => __DIR__ . '/..' . '/phpunit/phpunit/src/Exception.php',

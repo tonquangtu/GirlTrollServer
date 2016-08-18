@@ -17,6 +17,8 @@ class CreateImageCoversTable extends Migration {
 			$table->increments('id');
 			$table->text('title');
 			$table->text('url_image');
+			$table->text('url_image_thumbnail');
+			$table->bigInteger('number_cover')->default(0);
 			// $table->timestamps();
 		});
 	}

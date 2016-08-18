@@ -6,6 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    
     'CreateEventsTable' => $baseDir . '/database/migrations/2016_08_16_183621_create_events_table.php',
     'CreateFeedsTable' => $baseDir . '/database/migrations/2016_08_16_154509_create_feeds_table.php',
     'CreateImageCoversTable' => $baseDir . '/database/migrations/2016_08_16_155444_create_image_covers_table.php',
@@ -19,6 +20,7 @@ return array(
     'File_Iterator_Facade' => $vendorDir . '/phpunit/php-file-iterator/src/Facade.php',
     'File_Iterator_Factory' => $vendorDir . '/phpunit/php-file-iterator/src/Factory.php',
     'IlluminateQueueClosure' => $vendorDir . '/laravel/framework/src/Illuminate/Queue/IlluminateQueueClosure.php',
+    'ImageCoverTableSeeder' => $baseDir . '/database/seeds/ImageCoverTableSeeder.php',
     'ImageTableSeeder' => $baseDir . '/database/seeds/ImageTableSeeder.php',
     'MemberTableSeeder' => $baseDir . '/database/seeds/MemberTableSeeder.php',
     'PHPUnit_Exception' => $vendorDir . '/phpunit/phpunit/src/Exception.php',
