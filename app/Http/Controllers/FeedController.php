@@ -237,4 +237,13 @@ class FeedController extends Controller {
 		return Response::json($send);
 	}
 
+
+	/**
+	 * Test Post Feed
+	 * @return [type] [description]
+	 */
+	public function testPostFeed(){
+		return view('testPostFeed');
+	}
+
 }
