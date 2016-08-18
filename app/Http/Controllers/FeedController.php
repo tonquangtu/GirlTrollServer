@@ -142,27 +142,6 @@ class FeedController extends Controller {
 	 * @return Response
 	 */
 	public function getNewFeed(Request $request){
-		return $this->getFeed($request, 'id');
-		
-	}
-
-	/**
-	 * Get List Top Feed
-	 * 
-	 * @return Response
-	 */
-	public function getTopFeed(Request $request){
-		return $this->getFeed($request, 'like');
-	}
-
-
-	/**
-	 * Get Feed
-	 * @param  Request $request 
-	 * @param  string  $order   attribute to order by
-	 * @return Response          
-	 */
-	public function getFeed(Request $request, $order){
 		// Get data from client
 		$currentFeedId = (int)$request->input('currentFeedId');
 		$limit         = $request->input('limit');
@@ -182,7 +161,7 @@ class FeedController extends Controller {
 			}
 
 			// $feeds = Feed::where('id','<', $current)->orderBy('id','DESC')->take($limit)->get();
-			$feeds = Feed::where('id','<', $current)->orderBy($order,'DESC')->take($limit)->get();
+			$feeds = Feed::where('id','<', $current)->orderBy('id','DESC')->take($limit)->get();
 			$data = array();
 			foreach($feeds as $item){
 
@@ -232,6 +211,82 @@ class FeedController extends Controller {
 			'paging'  => [
 				'beforeFeedId' => $currentFeedId,
 				'afterFeedId'  => $afterFeedId
+			]
+		];
+		return Response::json($send);
+		
+	}
+
+	/**
+	 * Get List Top Feed
+	 * 
+	 * @return Response
+	 */
+	public function getTopFeed(Request $request){
+		// Get data from client
+		$listIdUsed = $request->input('listIdUsed');
+		$limit      = $request->input('limit');
+
+		//Add ids to array
+		$arr_idUsed = explode(',', $listIdUsed);
+
+		// Get list feed order by like and not used
+		$feeds = Feed::whereNotIn('id', $arr_idUsed)->orderBy('like','DESC')->take($limit)->get();
+		if(count($feeds)==0){
+			$success = 0;
+			$data = [];
+			$afterListIdUsed=0;
+		} else{
+			$data = array();
+			$afterListIdUsed = $listIdUsed;
+			foreach($feeds as $item){
+
+				$arr_image = $item->image()->get();
+				$images = array();
+				foreach($arr_image as $img){
+					$images[] = [
+						'imageId'           => $img->id,
+						'urlImage'          => $img->url_image,
+						'type'              => $img->type,
+						'linkFace'          => $img->link_face,
+						'urlImageThumbnail' => $img->url_image_thumbnail
+					];
+				}
+
+				$arr_video = Feed::find($item->id)->video()->get();
+				$videos = array();
+				foreach($arr_video as $vde){
+					$videos[]=[
+						'videoId'  => $vde->id,
+						'urlVideo' => $vde->url_video,
+						'type'     => $vde->type
+					];
+				}
+				$mdata = array();
+				$mdata['feedId']   = $item->id;
+				$mdata['memberId'] = $item->member()->first()->member_id;
+				$mdata['title']    = $item->title;
+				$mdata['time']     = $item->time;
+				$mdata['like']     = $item->like;
+				$mdata['comment']  = $item->comment;
+				$mdata['share']    = $item->share;
+				$mdata['school']   = $item->school;
+				$mdata['images']   = $images;
+				$mdata['videos']   = $videos;
+
+				$data[] = $mdata;
+				$afterListIdUsed .=','.$item->id;
+			}
+
+			$success = 1;
+		}
+		$send = [
+			'success' => $success,
+			'message' => ($success==0)?'End Of Feed':'Success',
+			'data'    => $data,
+			'paging'  => [
+				'beforeListIdUsed' => $listIdUsed,
+				'afterListIdUsed'  => $afterListIdUsed
 			]
 		];
 		return Response::json($send);
