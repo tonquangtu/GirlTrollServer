@@ -24,6 +24,7 @@ class LoginController extends Controller {
 			$member->username = $request->input('username');
 			$member->rank = 0;
 			$member->like = 0;
+			$member->avatar_url = $request->input('avatarUrl');
 			$member->total_image = 0;
 			$member->save();
 			$success = 1;
