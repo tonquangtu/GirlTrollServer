@@ -33,6 +33,10 @@ Route::get('feed/new',['as'=>'getNewFeed', 'uses'=>'FeedController@getNewFeed'])
 /**
  * Get top feed
  */
+<<<<<<< HEAD
+Route::get('feed/top',['as'=>'getTopFeed', 'uses'=>'FeedController@getTopFeed']);
+Route::post('feed/top',['as'=>'getTopFeed', 'uses'=>'FeedController@getTopFeed']);
+=======
 Route::post('feed/top',['as'=>'getTopFeed', 'uses'=>'FeedController@getTopFeed']);
 
 /**
@@ -49,6 +53,7 @@ Route::post('feed/comment',['as'=>'postComment', 'uses'=>'FeedController@postCom
  * Update feed when share or unshare
  */
 Route::get('feed/share',['as'=>'postShare', 'uses'=>'FeedController@postShare']);
+>>>>>>> newfeed_topfeed_postfeed
 
 /**
  * Save a new feed
@@ -58,6 +63,10 @@ Route::resource('feed','FeedController',['only'=>'store']);
 /**
  * Get list Cover Image
  */
+<<<<<<< HEAD
+Route::get('coverimage',['as'=>'coverImage','uses'=>'CoverImageController@getCoverImage']);
+=======
+>>>>>>> newfeed_topfeed_postfeed
 Route::post('coverimage',['as'=>'coverImage','uses'=>'CoverImageController@getCoverImage']);
 
 /**
