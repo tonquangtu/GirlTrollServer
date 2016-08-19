@@ -5,8 +5,9 @@ use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
 use DB;
-use App\Event;
 use Response;
+use App\Event;
+use App\UserEvent;
 
 class EventController extends Controller {
 
@@ -91,7 +92,23 @@ class EventController extends Controller {
 	 * Post if member complete event
 	 * @return Response
 	 */
-	public function postEventComplete(){
-		//
+	public function postEventComplete(Request $request){
+		$userEvent = UserEvent::where('event_id', '=', $request->eventId)
+			->where('member_id', '=', $request->memberId)->first();
+		if (count($userEvent) == 0) {
+			$success = 0;
+		} else {
+			$success = 1;
+			$userEvent = new UserEvent();
+			$userEvent->event_id = $request->eventId;
+			$userEvent->member_id = $request->memberId;
+			$userEvent->image_id = $request->imageId;
+			$userEvent->save();
+		}
+		$send = [
+			'success' => $success,
+			'message' => ($success == 0) ? 'Member and event existed in database' : 'Success'
+		];
+		return Response::json($send);
 	}
 }
