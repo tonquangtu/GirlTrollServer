@@ -33,7 +33,22 @@ Route::get('feed/new',['as'=>'getNewFeed', 'uses'=>'FeedController@getNewFeed'])
 /**
  * Get top feed
  */
-Route::get('feed/top',['as'=>'getTopFeed', 'uses'=>'FeedController@getTopFeed']);
+Route::post('feed/top',['as'=>'getTopFeed', 'uses'=>'FeedController@getTopFeed']);
+
+/**
+ * Update feed when like or unlike
+ */
+Route::post('feed/like',['as'=>'postLike', 'uses'=>'FeedController@postLike']);
+
+/**
+ * Update feed when comment or uncomment
+ */
+Route::post('feed/comment',['as'=>'postComment', 'uses'=>'FeedController@postComment']);
+
+/**
+ * Update feed when share or unshare
+ */
+Route::get('feed/share',['as'=>'postShare', 'uses'=>'FeedController@postShare']);
 
 /**
  * Save a new feed
@@ -43,7 +58,7 @@ Route::resource('feed','FeedController',['only'=>'store']);
 /**
  * Get list Cover Image
  */
-Route::get('coverimage',['as'=>'coverImage','uses'=>'CoverImageController@getCoverImage']);
+Route::post('coverimage',['as'=>'coverImage','uses'=>'CoverImageController@getCoverImage']);
 
 /**
  * Save a userevent when use complete event
