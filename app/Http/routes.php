@@ -56,3 +56,9 @@ Route::post('event/complete',['as'=>'eventcomplete','uses'=>'EventController@pos
  */
 Route::resource('event','EventController',['only'=>['index','show']]);
 
+
+
+/**
+ * Test Post Feed
+ */
+Route::get('testPostFeed','FeedController@testPostFeed');
