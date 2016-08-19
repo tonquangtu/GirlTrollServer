@@ -18,8 +18,9 @@ class EventController extends Controller {
 	 */
 	public function index()
 	{
-		$listEvent = Event::all();
+//		$listEvent = Event::all();
 //		$listEvent = DB::table('event')->get();
+		$listEvent = Event::where('active', '=', 1)->orderBy('time_end', 'DESC')->get();
 		if (count($listEvent) == 0) {
 			$success = 0;
 			$data = [];
