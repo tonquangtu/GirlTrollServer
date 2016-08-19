@@ -5,8 +5,9 @@ use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
 use DB;
-use App\Event;
 use Response;
+use App\Event;
+use App\UserEvent;
 
 class EventController extends Controller {
 
@@ -55,34 +56,36 @@ class EventController extends Controller {
 		$event = Event::where('id', '=', $id)->first();
 		if (!isset($event->id)) {
 			$success = 0;
-			$eventDetail = [];
+			$img = [];
 		} else {
 			$success = 1;
-			$image = DB::table('event')
+			$images = DB::table('event')
 				->join('user_event', 'event.id', '=', 'user_event.event_id')
 				->join('image', 'image.id', '=', 'user_event.image_id')
 				->select('image.*')
-				->first();
-			$eventDetail = [
-				'sortContent' => $event->sort_content,
-				'content' => $event->content,
-				'images' => [
+				->get();
+			foreach ($images as $image) {
+				$img[] = [
 					'feedId' => $image->feed_id,
 					'imageId' => $image->id,
 					'urlImage' => $image->url_image,
 					'type' => $image->type,
 					'linkFace' => $image->link_face,
 					'urlImageThumbnail' => $image->url_image_thumbnail
-				],
-				'type' => $event->type,
-				'policy' => $event->policy,
-				'active' => $event->active
-			];
+				];
+			}
 		}
 		$send = [
 			'success' => $success,
 			'message' => ($success == 0) ? 'Not found event' : 'Detail information of event',
-			'event' => $eventDetail
+			'event' => [
+				'sortContent' => $event->sort_content,
+				'content' => $event->content,
+				'images' => $img,
+				'type' => $event->type,
+				'policy' => $event->policy,
+				'active' => $event->active
+			]
 		];
 		return Response::json($send);
 	}
@@ -91,7 +94,23 @@ class EventController extends Controller {
 	 * Post if member complete event
 	 * @return Response
 	 */
-	public function postEventComplete(){
-		//
+	public function postEventComplete(Request $request){
+		$userEvent = UserEvent::where('event_id', '=', $request->eventId)
+			->where('member_id', '=', $request->memberId)->first();
+		if (count($userEvent) == 0) {
+			$success = 0;
+		} else {
+			$success = 1;
+			$userEvent = new UserEvent();
+			$userEvent->event_id = $request->eventId;
+			$userEvent->member_id = $request->memberId;
+			$userEvent->image_id = $request->imageId;
+			$userEvent->save();
+		}
+		$send = [
+			'success' => $success,
+			'message' => ($success == 0) ? 'Member and event existed in database' : 'Success'
+		];
+		return Response::json($send);
 	}
 }
