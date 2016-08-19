@@ -48,7 +48,7 @@ Route::post('feed/comment',['as'=>'postComment', 'uses'=>'FeedController@postCom
 /**
  * Update feed when share or unshare
  */
-Route::get('feed/share',['as'=>'postShare', 'uses'=>'FeedController@postShare']);
+Route::post('feed/share',['as'=>'postShare', 'uses'=>'FeedController@postShare']);
 
 /**
  * Save a new feed
