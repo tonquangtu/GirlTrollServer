@@ -6,6 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    
     'CreateEventsTable' => $baseDir . '/database/migrations/2016_08_16_183621_create_events_table.php',
     'CreateFeedsTable' => $baseDir . '/database/migrations/2016_08_16_154509_create_feeds_table.php',
     'CreateImageCoversTable' => $baseDir . '/database/migrations/2016_08_16_155444_create_image_covers_table.php',
@@ -460,4 +461,5 @@ return array(
     'SessionHandlerInterface' => $vendorDir . '/symfony/http-foundation/Symfony/Component/HttpFoundation/Resources/stubs/SessionHandlerInterface.php',
     'TestCase' => $baseDir . '/tests/TestCase.php',
     'Text_Template' => $vendorDir . '/phpunit/php-text-template/src/Template.php',
+    'VideoTableSeeder' => $baseDir . '/database/seeds/VideoTableSeeder.php',
 );

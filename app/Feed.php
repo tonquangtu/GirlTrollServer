@@ -5,7 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 class Feed extends Model {
 
 	protected $table="feed";
-	protected $fillable=['id','title','school','time','like','comment','share','member_id'];
+	protected $fillable=['id','title','school','time','like','comment','share','vote','member_id'];
 	public $timestamps = false;
 
 	public function image(){
