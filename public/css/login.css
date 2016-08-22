@@ -1,0 +1,16 @@
+/* Login */
+
+body{
+	
+}
+.container-fluid{
+	margin-top: 100px;
+}
+
+.panel-default > .panel-heading {
+    color: #F6EAEA;
+    background-color: #4a4646;
+    border-color: #dddddd;
+    text-align: center;
+    font-size: 22px;
+}

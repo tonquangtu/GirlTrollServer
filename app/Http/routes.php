@@ -10,7 +10,7 @@
 | and give it the controller to call when that URI is requested.
 |
 */
-
+define('URLWEB','http://localhost/GirlTroll/');
 Route::get('/', 'WelcomeController@index');
 
 Route::get('home', 'HomeController@index');
@@ -19,6 +19,13 @@ Route::controllers([
 	'auth' => 'Auth\AuthController',
 	'password' => 'Auth\PasswordController',
 ]);
+
+Route::post('auth/login',['as'=>'postLogin','uses'=>'Auth\AuthController@postLogin']);
+
+Route::get('member',['as'=>'getListMember', 'uses'=>'HomeController@getListMember']);
+
+
+
 
 /**
  * Save account if not exist
@@ -41,10 +48,19 @@ Route::get('feed/top',['as'=>'getTopFeed', 'uses'=>'FeedController@getTopFeed'])
 Route::resource('feed','FeedController',['only'=>'store']);
 
 /**
- * Get list Cover Image
+ * Get list Cover Image for Service
  */
-Route::get('coverimage',['as'=>'coverImage','uses'=>'CoverImageController@getCoverImage']);
-Route::post('coverimage',['as'=>'coverImage','uses'=>'CoverImageController@getCoverImage']);
+Route::post('coverimage',['as'=>'postCoverImage','uses'=>'CoverImageController@getCoverImage']);
+
+/**
+ * Get List Cover Image for Web
+ */
+Route::get('coverimage/list',['as'=>'getListCoverImage','uses'=>'CoverImageController@getListCoverImage']);
+
+/**
+ * Create, Update, Delete Cover Image for Web
+ */
+Route::resource('coverimage','CoverImageController',['except'=>'index']);
 
 /**
  * Save a userevent when use complete event
@@ -52,9 +68,20 @@ Route::post('coverimage',['as'=>'coverImage','uses'=>'CoverImageController@getCo
 Route::post('event/complete',['as'=>'eventcomplete','uses'=>'EventController@postEventComplete']);
 
 /**
+ * Get List Event For Web
+ */
+
+Route::get('event/list',['as'=>'getListEvent','uses'=>'EventController@getListEvent']);
+
+/**
+ * Add Image for Event
+ */
+Route::get('event/addImage/{id}',['as'=>'event.addImage','uses'=>'EventController@getAddImageEvent']);
+
+/**
  * Get list event, Get information event
  */
-Route::resource('event','EventController',['only'=>['index','show']]);
+Route::resource('event','EventController');
 
 
 

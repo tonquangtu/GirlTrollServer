@@ -1,4 +1,6 @@
 <?php namespace App\Http\Controllers;
+use App\Member;
+use Illuminate\Http\Request;
 
 class HomeController extends Controller {
 
@@ -30,7 +32,15 @@ class HomeController extends Controller {
 	 */
 	public function index()
 	{
-		return view('home');
+		return view('admin.index');
 	}
+
+	public function getListMember(){
+		$members = Member::paginate(5);
+		$members->setPath(URLWEB.'member');
+		return view('admin.member.list', compact('members'));
+	}
+
+	
 
 }
