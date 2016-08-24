@@ -12,9 +12,11 @@
 		School: <input type ="text" name = "school">
 		Link Face: <input type="text" name="linkFace">
 		Type: <input type="text" name="type">
-		<input type="hidden" name="totalFile" value = "2">
+		<input type="hidden" name="totalFile" value = "4">
 		File0: <input type="file" name="file_0">
 		File1: <input type="file" name="file_1">
+		File2: <input type="file" name="file_2">
+		File3: <input type="file" name="file_3">
 
 		<input type="submit" name="submit" value = "Gui">
 	</form>

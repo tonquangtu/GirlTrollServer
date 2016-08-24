@@ -11,4 +11,8 @@ class Event extends Model {
 	public function userevent(){
 		return $this->hasMany('App\UserEvent');
 	}
+
+	public function imageevent(){
+		return $this->hasMany('App\ImageEvent');
+	}
 }

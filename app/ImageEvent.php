@@ -10,11 +10,11 @@ class ImageEvent extends Model {
 	public $timeStart = false;
 
 	public function image(){
-		return $this->belongsTo('image');
+		return $this->belongsTo('App\Image');
 	}
 
 	public function event(){
-		return $this->belongsTo('event');
+		return $this->belongsTo('App\Event');
 	}
 
 }

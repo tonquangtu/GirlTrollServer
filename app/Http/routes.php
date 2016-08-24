@@ -10,7 +10,7 @@
 | and give it the controller to call when that URI is requested.
 |
 */
-define('URLWEB','http://localhost/GirlTroll/');
+define('URLWEB','http://girltroll.890m.com/');
 Route::get('/', 'WelcomeController@index');
 
 Route::get('home', 'HomeController@index');
@@ -36,6 +36,11 @@ Route::resource('login','LoginController',['only'=>'store']);
  * Get new feed
  */
 Route::get('feed/new',['as'=>'getNewFeed', 'uses'=>'FeedController@getNewFeed']);
+
+/**
+ * Get feet refresh
+ */
+Route::get('feed/refresh',['as'=>'getFeedRefresh','uses'=>'FeedController@getFeedRefresh']);
 
 /**
  * Get top feed
@@ -91,14 +96,17 @@ Route::get('event/list',['as'=>'getListEvent','uses'=>'EventController@getListEv
 /**
  * Add Image for Event
  */
-Route::get('event/addImage/{id}',['as'=>'event.addImage','uses'=>'EventController@getAddImageEvent']);
+Route::get('event/addImage/{id}',['as'=>'event.getAddImage','uses'=>'EventController@getAddImageEvent']);
+
+/**
+ * Add Image Was Choosed Of Event
+ */
+Route::post('event/addImage/{id}',['as'=>'event.postAddImage','uses'=>'EventController@postAddImageEvent']);
 
 /**
  * Get list event, Get information event
  */
 Route::resource('event','EventController');
-
-
 
 /**
  * Test Post Feed

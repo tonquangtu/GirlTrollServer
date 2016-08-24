@@ -104,7 +104,7 @@
                                     <button type = "submit" class="btn btn-link" onclick = "window.confirm('Do you sure delete this event')">Delete</a>    
                                 </form>
                             </td>
-                            <td><a href="{{route('event.addImage',$item->id)}}">Add</a></td>
+                            <td><a href="{{route('event.getAddImage',$item->id)}}">Add ({{count($item->imageevent()->get())}})</a></td>
                         </tr>
                                 
                         @endforeach

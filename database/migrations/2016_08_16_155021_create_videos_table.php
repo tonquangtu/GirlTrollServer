@@ -17,6 +17,7 @@ class CreateVideosTable extends Migration {
 			$table->increments('id');
 			$table->text('url_video');
 			$table->tinyInteger('type');
+			$table->text('url_image_thumbnail');
 			$table->integer('feed_id')->unsigned();
 			// $table->timestamps();
 			$table->foreign('feed_id')->references('id')->on('feed');

@@ -37,8 +37,8 @@ class CoverImageController extends Controller {
 				$image = [
 					'imageId'=> $item->id,
 					'title' => $item->title,
-					'urlImage' => $item->url_image,
-					'urlImageThumbnail'=>$item->url_image_thumbnail,
+					'urlImage' => URLWEB.$item->url_image,
+					'urlImageThumbnail'=>URLWEB.$item->url_image_thumbnail,
 					'numberCover' => $item->number_cover
 				];
 				$afterListIdUsed.=','.$item->id;
@@ -52,8 +52,8 @@ class CoverImageController extends Controller {
 			'message' => ($success==0)?'End Of Image':'Success',
 			'data'    => $data,
 			'paging'  => [
-				'beforeListIdUsed' => $listIdUsed,
-				'afterListIdUsed'  => $afterListIdUsed
+				'before' => $listIdUsed,
+				'after'  => $afterListIdUsed
 			]
 		];
 		return Response::json($send);
@@ -90,7 +90,7 @@ class CoverImageController extends Controller {
 		$coverimage->title=$request->input('title');
 		if($request->hasFile('image_new')){
 			$image = $request->file('image_new');
-			$filename = changeTitle($image->getClientOriginalName());
+			$filename = changeTitle(time().$image->getClientOriginalName());
 			$pathImg = 'public/imagecover';
 			$pathThumb = 'public/imagecover/thumbnail';
 			$width = 100;

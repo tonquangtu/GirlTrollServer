@@ -9,6 +9,7 @@ use Response;
 use App\Event;
 use App\UserEvent;
 use App\ImageEvent;
+use App\Feed;
 
 class EventController extends Controller {
 
@@ -53,25 +54,28 @@ class EventController extends Controller {
 	 */
 	public function show($id)
 	{
-		$event = Event::where('id', '=', $id)->first();
+		$event = Event::find($id);
+		$img = array();
 		if (!isset($event->id)) {
 			$success = 0;
-			$img = [];
+			$img = null;
 		} else {
+			
 			$success = 1;
-			$images = DB::table('event')
-				->join('user_event', 'event.id', '=', 'user_event.event_id')
-				->join('image', 'image.id', '=', 'user_event.image_id')
-				->select('image.*')
-				->get();
-			foreach ($images as $image) {
+			$imageevents = ImageEvent::where('event_id','=',$event->id)->get();
+			if(count($imageevents)==0){
+				$success = 0;
+				$img = null;
+			}
+			foreach($imageevents as $item){
+				$image = $item->image()->first();
 				$img[] = [
 					'feedId' => $image->feed_id,
 					'imageId' => $image->id,
-					'urlImage' => $image->url_image,
+					'urlImage' => URLWEB.$image->url_image,
 					'type' => $image->type,
 					'linkFace' => $image->link_face,
-					'urlImageThumbnail' => $image->url_image_thumbnail
+					'urlImageThumbnail' => URLWEB.$image->url_image_thumbnail
 				];
 			}
 		}
@@ -219,8 +223,67 @@ class EventController extends Controller {
 			return redirect()->route('getListEvent')->with(['flash_level'=>'danger','flash_message'=>'Not found event']);
 		}
 		$imageevents = ImageEvent::where('event_id','=',$id)->get();
-		if(count($imageevents)==0){
-			$topImage = Feed::
+		$images = array();
+		if(count($imageevents)!=0){
+			foreach($imageevents as $item){
+				$img = $item->image()->first();
+				$images[] = [
+					'imageId'           => $img->id,
+					'urlImage'          => $img->url_image,
+					'linkFace'          => $img->link_face,
+					'urlImageThumbnail' => $img->url_image_thumbnail,
+					'checked'			=> 1
+				];
+			}
 		}
+		// Get number week of year
+		$week = date('W', strtotime(date('Y-m-d')));
+		
+		// Get 30 feed of top week
+		$limit      = 30;
+
+		// Get list feed order by vote
+		$feeds = Feed::where(DB::raw('YEAR(time)'),'=',date('Y'))->where(DB::raw('WEEKOFYEAR(time)'),'=',$week-1)->orderBy('vote','DESC')->take($limit)->get(); 
+
+
+		if(count($feeds)!=0){
+
+			//Get all of image of 30 feed of top week
+			foreach($feeds as $item){
+				$arr_image = $item->image()->get();
+				foreach($arr_image as $img){
+					$images[] = [
+						'imageId'           => $img->id,
+						'urlImage'          => $img->url_image,
+						'linkFace'          => $img->link_face,
+						'urlImageThumbnail' => $img->url_image_thumbnail,
+						'checked'			=> 0
+					];
+				}
+			}
+		}
+		if(count($images)==0){
+			return redirect()->route('getListEvent')->with(['flash_level'=>'danger','flash_message'=>'Not found Image to Add']);
+		}
+		return view('admin.event.image',compact('images','id'))->with('numberAdded',count($imageevents));
+			
+	}
+
+	public function postAddImageEvent(Request $request, $id){
+		$images = $request->input('images');
+		if(count($images)==0){
+			return redirect()->route('getListEvent')->with(['flash_level'=>'danger','flash_message'=>'Not add image']);
+		}
+		foreach($images as $image){
+			$imageevent = ImageEvent::where('image_id','=',$image)->where('event_id','=',$id)->first();
+			if(count($imageevent)>0){
+				$imageevent->delete();
+			}
+			$imageevent = new ImageEvent;
+			$imageevent->image_id = $image;
+			$imageevent->event_id = $id;
+			$imageevent->save();
+		}
+		return redirect()->route('getListEvent')->with(['flash_level'=>'success','flash_message'=>'Add Image for event success']);
 	}
 }

@@ -52,18 +52,20 @@ class FeedController extends Controller {
 			$linkFace = $request->input('linkFace');
 			$typeImage = $request->input('type');
 
-			$width = 100;
-			$height = 100;
+			$width = 500;
+			$height = 500;
 			$pathImg = 'public/image';
 			$pathThumb = 'public/image/thumbnail';
 			$count = 0;
 
 			//Upload feed image
 			for($i=0; $i<$totalFile; $i++){
-				$files[] = $request->file('file_'.$i);
+				if($request->hasFile('file_'.$i)){
+					$files[] = $request->file('file_'.$i);
+				}
 			}
 			foreach($files as $image){
-				$imagename = changeTitle($image->getClientOriginalName());
+				$imagename = changeTitle(time().$image->getClientOriginalName());
 				$this->resizeImagePost($image, $imagename, $width, $height, $pathImg, $pathThumb);
 
 				$img = new ImageModel;	
@@ -104,7 +106,7 @@ class FeedController extends Controller {
 			} else{
 				if($request->hasFile('file')){
 					$video = $request->file('file');
-					$videoname = changeTitle($image->getClientOriginalName());
+					$videoname = changeTitle(time().$video->getClientOriginalName());
 					$pathVideo = 'public/video';
 					$video->move($pathVideo, $videoname);
 
@@ -184,25 +186,32 @@ class FeedController extends Controller {
 
 				$arr_image = $item->image()->get();
 				$images = array();
-				foreach($arr_image as $img){
-					$images[] = [
-						'imageId'           => $img->id,
-						'urlImage'          => $img->url_image,
-						'type'              => $img->type,
-						'linkFace'          => $img->link_face,
-						'urlImageThumbnail' => $img->url_image_thumbnail
-					];
+				if(count($arr_image)==0){
+					$images = null;
+				}else{
+					foreach($arr_image as $img){
+						$images[] = [
+							'imageId'           => $img->id,
+							'urlImage'          => URLWEB.$img->url_image,
+							'type'              => $img->type,
+							'linkFace'          => $img->link_face,
+							'urlImageThumbnail' => URLWEB.$img->url_image_thumbnail
+						];
+					}
 				}
+				
 
-				$arr_video = Feed::find($item->id)->video()->get();
-				$videos = array();
-				foreach($arr_video as $vde){
-					$videos[]=[
-						'videoId'  => $vde->id,
-						'urlVideo' => $vde->url_video,
-						'type'     => $vde->type
-					];
+				$vde = $item->video()->first();
+				$video = array();
+				if(isset($vde->id)){
+					$video = array();
+					$video['videoId']  = $vde->id;
+					$video['urlVideo'] = URLWEB.$vde->url_video;
+					$video['type']     = $vde->type;
+				}else{
+					$video = null;
 				}
+				
 				
 				$mem = $item->member()->first();
 				$member= array();
@@ -222,7 +231,7 @@ class FeedController extends Controller {
 				$mdata['share']   = $item->share;
 				$mdata['school']  = $item->school;
 				$mdata['images']  = $images;
-				$mdata['videos']  = $videos;
+				$mdata['video']  = $video;
 				$mdata['member']  = $member;
 
 				$data[] = $mdata;
@@ -236,8 +245,8 @@ class FeedController extends Controller {
 			'message' => ($success==0)?'End Of Feed':'Success',
 			'data'    => $data,
 			'paging'  => [
-				'beforeFeedId' => $currentFeedId,
-				'afterFeedId'  => $afterFeedId
+				'before' => $currentFeedId,
+				'after'  => $afterFeedId
 			]
 		];
 		return Response::json($send);
@@ -293,24 +302,28 @@ class FeedController extends Controller {
 
 				$arr_image = $item->image()->get();
 				$images = array();
-				foreach($arr_image as $img){
-					$images[] = [
-						'imageId'           => $img->id,
-						'urlImage'          => $img->url_image,
-						'type'              => $img->type,
-						'linkFace'          => $img->link_face,
-						'urlImageThumbnail' => $img->url_image_thumbnail
-					];
+				if(count($arr_image)==0){
+					$images = null;
+				}else{
+					foreach($arr_image as $img){
+						$images[] = [
+							'imageId'           => $img->id,
+							'urlImage'          => URLWEB.$img->url_image,
+							'type'              => $img->type,
+							'linkFace'          => $img->link_face,
+							'urlImageThumbnail' => URLWEB.$img->url_image_thumbnail
+						];
+					}
 				}
 
-				$arr_video = Feed::find($item->id)->video()->get();
-				$videos = array();
-				foreach($arr_video as $vde){
-					$videos[]=[
-						'videoId'  => $vde->id,
-						'urlVideo' => $vde->url_video,
-						'type'     => $vde->type
-					];
+				$vde = $item->video()->first();
+				$video = array();
+				if(!isset($vde)){
+					$video = null;
+				}else{
+					$video['videoId']  = $vde->id;
+					$video['urlVideo'] = URLWEB.$vde->url_video;
+					$video['type']     = $vde->type;
 				}
 
 				$mem = $item->member()->first();
@@ -331,7 +344,7 @@ class FeedController extends Controller {
 				$mdata['share']    = $item->share;
 				$mdata['school']   = $item->school;
 				$mdata['images']   = $images;
-				$mdata['videos']   = $videos;
+				$mdata['video']   = $video;
 				$mdata['member']   = $member;
 
 				$data[] = $mdata;
@@ -438,7 +451,7 @@ class FeedController extends Controller {
 	 * @return [type] [description]
 	 */
 	public function testPostFeed(){
-		return view('testPostFeed');
+		return view('testPostFeedVideo');
 	}
 
 }
