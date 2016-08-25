@@ -20,7 +20,7 @@ class EventController extends Controller {
 	 */
 	public function index()
 	{
-		$listEvent = Event::where('active', '=', 1)->orderBy('time_end', 'DESC')->get();
+		$listEvent = Event::where('active', '=', 1)->where(DB::raw('time_end'),'>',date('Y-m-d H:i:s'))->orderBy('time_end', 'DESC')->get();
 		if (count($listEvent) == 0) {
 			$success = 0;
 			$data = [];

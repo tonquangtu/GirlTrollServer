@@ -14,6 +14,7 @@
 		Type: <input type="text" name="type">
 		Youtube: <input type="text" name="youtube">
 		File: <input type="file" name="file">
+		Thumbnail: <input type="file" name="thumbnailVideo">
 
 		<input type="submit" name="submit" value = "Gui">
 	</form>

@@ -102,7 +102,7 @@
 		          	<div class="form-group">
 		            	<label class="col-md-3 control-label"></label>
 		            	<div class="col-md-8">
-		              		<input class="btn btn-primary" value="Save" type="submit">
+		              		<input class="btn btn-primary" value="Save" type="submit" id = "save">
 		              		<span></span>
 		              		<input class="btn btn-default" value="Reset" type="reset">
 		              		<span></span>

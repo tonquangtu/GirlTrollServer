@@ -150,6 +150,11 @@ return [
 		 */
 		'Intervention\Image\ImageServiceProvider',
 
+		/**
+		 * Thumbnail of video
+		 */
+		'Lakshmajim\Thumbnail\ThumbnailServiceProvider',
+
 	],
 
 	/*
@@ -199,6 +204,8 @@ return [
 		'View'      => 'Illuminate\Support\Facades\View',
 
 		'Image' => 'Intervention\Image\Facades\Image',
+
+		'Thumbnail' => 'Lakshmajim\Thumbnail\Facade\Thumbnail',
 
 	],
 

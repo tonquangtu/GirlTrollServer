@@ -5,80 +5,64 @@ use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
 
+use Carbon\Carbon;
+use Thumbnail;
+
 class DemoController extends Controller {
 
-	/**
-	 * Display a listing of the resource.
-	 *
-	 * @return Response
-	 */
-	public function index()
-	{
-		//
+	public function demo(){
+		return view('testThumbnailVideo');
 	}
 
-	/**
-	 * Show the form for creating a new resource.
-	 *
-	 * @return Response
-	 */
-	public function create()
-	{
-		//
-	}
+	public function testThumbnail(Request $request)
+    {
+        // get file from input data
+        $file             = $request->file('file');
 
-	/**
-	 * Store a newly created resource in storage.
-	 *
-	 * @return Response
-	 */
-	public function store()
-	{
-		//
-	}
+        // get file type
+        $extension_type   = $file->getClientMimeType();
 
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function show($id)
-	{
-		//
-	}
+        // set storage path to store the file (actual video)
+        $destination_path = 'public/demo';
 
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function edit($id)
-	{
-		//
-	}
+        // get file extension
+        $extension        = $file->getClientOriginalExtension();
 
-	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function update($id)
-	{
-		//
-	}
 
-	/**
-	 * Remove the specified resource from storage.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function destroy($id)
-	{
-		//
-	}
+        $timestamp        = str_replace([' ', ':'], '-', Carbon::now()->toDateTimeString());
+        $file_name        = $timestamp;
+
+        $upload_status    = $file->move($destination_path, $file_name);         
+
+        if($upload_status)
+        {
+            // file type is video
+            // set storage path to store the file (image generated for a given video)
+            $thumbnail_path   = 'public/demo/image';
+
+            $video_path       = $destination_path.'/'.$file_name;
+
+            // set thumbnail image name
+            $thumbnail_image  ='haha'.".".$timestamp.".jpg";
+
+            // set the thumbnail image "palyback" video button
+            $water_mark       = 'public/watermark/p.png';
+
+            // get video length and process it
+            // assign the value to time_to_image (which will get screenshot of video at that specified seconds)
+            $time_to_image    = 10;
+
+
+            $thumbnail_status = Thumbnail::getThumbnail($video_path,$thumbnail_path,$thumbnail_image,160,128,$time_to_image,$water_mark,true);      
+            if($thumbnail_status)
+            {
+                echo "Thumbnail generated";
+            }
+            else
+            {
+                echo "thumbnail generation has failed";
+            }
+        }
+    }
 
 }

@@ -9,8 +9,8 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
     public static $files = array (
         '9f7f3f9b1f82484e76bcd07b985a2d2f' => __DIR__ . '/..' . '/symfony/var-dumper/Symfony/Component/VarDumper/Resources/functions/dump.php',
         'fe1bcd0336136e435eaf197895daf81a' => __DIR__ . '/..' . '/nikic/php-parser/lib/bootstrap.php',
-        'e40631d46120a9c38ea139981f8dab26' => __DIR__ . '/..' . '/ircmaxell/password-compat/lib/password.php',
         '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
+        'e40631d46120a9c38ea139981f8dab26' => __DIR__ . '/..' . '/ircmaxell/password-compat/lib/password.php',
         '5255c38a0faeba867671b61dfda6d864' => __DIR__ . '/..' . '/paragonie/random_compat/lib/random.php',
         'bd9634f2d41831496de0d3dfe4c94881' => __DIR__ . '/..' . '/symfony/polyfill-php56/bootstrap.php',
         'e7223560d890eab89cda23685e711e2c' => __DIR__ . '/..' . '/psy/psysh/src/Psy/functions.php',
@@ -55,6 +55,7 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
         'L' => 
         array (
             'League\\Flysystem\\' => 17,
+            'Lakshmajim\\Thumbnail\\' => 21,
         ),
         'I' => 
         array (
@@ -72,6 +73,7 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
         'D' => 
         array (
             'Doctrine\\Instantiator\\' => 22,
+            'Doctrine\\Common\\Cache\\' => 22,
         ),
         'C' => 
         array (
@@ -139,6 +141,10 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
         array (
             0 => __DIR__ . '/..' . '/league/flysystem/src',
         ),
+        'Lakshmajim\\Thumbnail\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/lakshmajim/thumbnail/src',
+        ),
         'Intervention\\Image\\' => 
         array (
             0 => __DIR__ . '/..' . '/intervention/image/src/Intervention/Image',
@@ -158,6 +164,10 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
         'Doctrine\\Instantiator\\' => 
         array (
             0 => __DIR__ . '/..' . '/doctrine/instantiator/src/Doctrine/Instantiator',
+        ),
+        'Doctrine\\Common\\Cache\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/doctrine/cache/lib/Doctrine/Common/Cache',
         ),
         'ClassPreloader\\' => 
         array (
@@ -236,6 +246,13 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
                 0 => __DIR__ . '/..' . '/phpspec/phpspec/src',
             ),
         ),
+        'N' => 
+        array (
+            'Neutron' => 
+            array (
+                0 => __DIR__ . '/..' . '/neutron/temporary-filesystem/src',
+            ),
+        ),
         'J' => 
         array (
             'JakubOnderka\\PhpConsoleHighlighter' => 
@@ -245,6 +262,20 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
             'JakubOnderka\\PhpConsoleColor' => 
             array (
                 0 => __DIR__ . '/..' . '/jakub-onderka/php-console-color/src',
+            ),
+        ),
+        'F' => 
+        array (
+            'FFMpeg' => 
+            array (
+                0 => __DIR__ . '/..' . '/php-ffmpeg/php-ffmpeg/src',
+            ),
+        ),
+        'E' => 
+        array (
+            'Evenement' => 
+            array (
+                0 => __DIR__ . '/..' . '/evenement/evenement/src',
             ),
         ),
         'D' => 
@@ -269,12 +300,20 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
                 0 => __DIR__ . '/..' . '/mtdowling/cron-expression/src',
             ),
         ),
+        'A' => 
+        array (
+            'Alchemy' => 
+            array (
+                0 => __DIR__ . '/..' . '/alchemy/binary-driver/src',
+            ),
+        ),
     );
 
     public static $classMap = array (
         'CreateEventsTable' => __DIR__ . '/../..' . '/database/migrations/2016_08_16_183621_create_events_table.php',
         'CreateFeedsTable' => __DIR__ . '/../..' . '/database/migrations/2016_08_16_154509_create_feeds_table.php',
         'CreateImageCoversTable' => __DIR__ . '/../..' . '/database/migrations/2016_08_16_155444_create_image_covers_table.php',
+        'CreateImageEventsTable' => __DIR__ . '/../..' . '/database/migrations/2016_08_22_170334_create_image_events_table.php',
         'CreateImagesTable' => __DIR__ . '/../..' . '/database/migrations/2016_08_16_153654_create_images_table.php',
         'CreateMembersTable' => __DIR__ . '/../..' . '/database/migrations/2016_08_16_145800_create_members_table.php',
         'CreatePasswordResetsTable' => __DIR__ . '/../..' . '/database/migrations/2014_10_12_100000_create_password_resets_table.php',
