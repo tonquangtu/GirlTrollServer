@@ -64,6 +64,7 @@ class FeedController extends Controller {
 					$files[] = $request->file('file_'.$i);
 				}
 			}
+			//Width and height of thumbnail change when number file change
 			switch(count($files)){
 				case 1: $width[0]=500; $height[0]=500;
 						break;
@@ -75,6 +76,8 @@ class FeedController extends Controller {
 						break;
 				default: break;
 			}
+
+			//Save file
 			$i=0;
 			foreach($files as $image){
 				$imagename = changeTitle(time().$image->getClientOriginalName());
@@ -106,6 +109,8 @@ class FeedController extends Controller {
 
 			//Upload feed video
 			$typeVideo = $request->input('type');
+
+			//0: file, 1: youtube
 			if($typeVideo == 1){
 				$vde = new Video;
 				$vde->url_video = $request->input('youtube');
@@ -118,6 +123,8 @@ class FeedController extends Controller {
 				$message = "Success";
 			} else{
 				if($request->hasFile('file')){
+
+					//save file on system
 					$video = $request->file('file');
 					$videoname = changeTitle(time().$video->getClientOriginalName());
 					$pathVideo = 'public/video';
@@ -132,6 +139,7 @@ class FeedController extends Controller {
 						$thumbnailname = 'defaultThumbnail.jpg';
 					}
 
+					//save file on database
 					$vde = new Video;
 					$vde->url_video = $pathVideo.'/'.$videoname;
 					$vde->type = $typeVideo;
@@ -150,9 +158,9 @@ class FeedController extends Controller {
 		}
 
 		return Response::json([
-				'success'=>$success,
-				'message'=>$message
-			]);
+			'success'=>$success,
+			'message'=>$message
+		]);
 	}
 
 
@@ -171,7 +179,7 @@ class FeedController extends Controller {
 		//Move image to the pathImg
 		$image->move($pathImg, $imagename);
 		
-		//Create thumbnail and save to the pathThumbnail
+		//Create thumbnail and save to the pathThumbnail use library Image Laravel
 		$img = Image::make($pathImg.'/'.$imagename);
 		$img->resize($width, $height)->save($pathThumb.'/'.$imagename);
 
@@ -225,11 +233,13 @@ class FeedController extends Controller {
 
 	public function getFeedRefresh(Request $request){
 		// Get data from client
-		$firstFeedId = (int)$request->input('firstFeedId');
+		$currentFeedId = (int)$request->input('currentFeedId');
 		$limit         = $request->input('limit');
 
-		//firstFeedId == -1 => the first load new feed
-		if($firstFeedId == -1){
+		//currentFeedId == -1 => the first load new feed
+		//currentFeedId == max feed => this is newest feed
+		//else load $limit new feed
+		if($currentFeedId == -1){
 			// $feeds = Feed::where('id','<', $current)->orderBy('id','DESC')->take($limit)->get();
 			$feeds = Feed::orderBy('id','DESC')->take($limit)->get();
 			$data = $this->getFeed($feeds);
@@ -237,13 +247,13 @@ class FeedController extends Controller {
 			$success = 1;
 			$afterFeedId = (int)$feeds->first()->id;
 			$message = "Success";
-		}else if($firstFeedId==Feed::all()->last()->id){
+		}else if($currentFeedId==Feed::all()->last()->id){
 			$data = null;
 			$success = 1;
-			$afterFeedId = $firstFeedId;
+			$afterFeedId = $currentFeedId;
 			$message = "This is newest Feed";
 		} else {
-			$feeds = Feed::where('id','>',$firstFeedId)->orderBy('id','ASC')->take($limit)->get();
+			$feeds = Feed::where('id','>',$currentFeedId)->orderBy('id','ASC')->take($limit)->get();
 			//Sort By DESC OF ID
 			$feeds->sortByDesc('id', $options = SORT_REGULAR);
 
@@ -258,7 +268,7 @@ class FeedController extends Controller {
 			'message' => $message,
 			'data'    => $data,
 			'paging'  => [
-				'before' => $firstFeedId,
+				'before' => $currentFeedId,
 				'after'  => $afterFeedId
 			]
 		];
