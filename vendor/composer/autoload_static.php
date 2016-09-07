@@ -9,16 +9,17 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
     public static $files = array (
         '9f7f3f9b1f82484e76bcd07b985a2d2f' => __DIR__ . '/..' . '/symfony/var-dumper/Symfony/Component/VarDumper/Resources/functions/dump.php',
         'fe1bcd0336136e435eaf197895daf81a' => __DIR__ . '/..' . '/nikic/php-parser/lib/bootstrap.php',
-        'e40631d46120a9c38ea139981f8dab26' => __DIR__ . '/..' . '/ircmaxell/password-compat/lib/password.php',
         '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
+        'e40631d46120a9c38ea139981f8dab26' => __DIR__ . '/..' . '/ircmaxell/password-compat/lib/password.php',
         '5255c38a0faeba867671b61dfda6d864' => __DIR__ . '/..' . '/paragonie/random_compat/lib/random.php',
         'bd9634f2d41831496de0d3dfe4c94881' => __DIR__ . '/..' . '/symfony/polyfill-php56/bootstrap.php',
+        'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
         'e7223560d890eab89cda23685e711e2c' => __DIR__ . '/..' . '/psy/psysh/src/Psy/functions.php',
         '65fec9ebcfbb3cbb4fd0d519687aea01' => __DIR__ . '/..' . '/danielstjules/stringy/src/Create.php',
-        'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
+        'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
         'f0906e6318348a765ffb6eb24e0d0938' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/helpers.php',
         '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
-        '12f8f41f7af2079ce2936747184d6d68' => __DIR__ . '/../..' . '/app/MyFunction/function.php',
+        '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -55,6 +56,7 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
         'L' => 
         array (
             'League\\Flysystem\\' => 17,
+            'Lakshmajim\\Thumbnail\\' => 21,
         ),
         'I' => 
         array (
@@ -64,6 +66,8 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
         'G' => 
         array (
             'GuzzleHttp\\Psr7\\' => 16,
+            'GuzzleHttp\\Promise\\' => 19,
+            'GuzzleHttp\\' => 11,
         ),
         'F' => 
         array (
@@ -72,6 +76,7 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
         'D' => 
         array (
             'Doctrine\\Instantiator\\' => 22,
+            'Doctrine\\Common\\Cache\\' => 22,
         ),
         'C' => 
         array (
@@ -139,6 +144,10 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
         array (
             0 => __DIR__ . '/..' . '/league/flysystem/src',
         ),
+        'Lakshmajim\\Thumbnail\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/lakshmajim/thumbnail/src',
+        ),
         'Intervention\\Image\\' => 
         array (
             0 => __DIR__ . '/..' . '/intervention/image/src/Intervention/Image',
@@ -151,6 +160,14 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/psr7/src',
         ),
+        'GuzzleHttp\\Promise\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/guzzlehttp/promises/src',
+        ),
+        'GuzzleHttp\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
+        ),
         'Faker\\' => 
         array (
             0 => __DIR__ . '/..' . '/fzaninotto/faker/src/Faker',
@@ -158,6 +175,10 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
         'Doctrine\\Instantiator\\' => 
         array (
             0 => __DIR__ . '/..' . '/doctrine/instantiator/src/Doctrine/Instantiator',
+        ),
+        'Doctrine\\Common\\Cache\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/doctrine/cache/lib/Doctrine/Common/Cache',
         ),
         'ClassPreloader\\' => 
         array (
@@ -236,6 +257,13 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
                 0 => __DIR__ . '/..' . '/phpspec/phpspec/src',
             ),
         ),
+        'N' => 
+        array (
+            'Neutron' => 
+            array (
+                0 => __DIR__ . '/..' . '/neutron/temporary-filesystem/src',
+            ),
+        ),
         'J' => 
         array (
             'JakubOnderka\\PhpConsoleHighlighter' => 
@@ -245,6 +273,20 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
             'JakubOnderka\\PhpConsoleColor' => 
             array (
                 0 => __DIR__ . '/..' . '/jakub-onderka/php-console-color/src',
+            ),
+        ),
+        'F' => 
+        array (
+            'FFMpeg' => 
+            array (
+                0 => __DIR__ . '/..' . '/php-ffmpeg/php-ffmpeg/src',
+            ),
+        ),
+        'E' => 
+        array (
+            'Evenement' => 
+            array (
+                0 => __DIR__ . '/..' . '/evenement/evenement/src',
             ),
         ),
         'D' => 
@@ -269,17 +311,28 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
                 0 => __DIR__ . '/..' . '/mtdowling/cron-expression/src',
             ),
         ),
+        'A' => 
+        array (
+            'Alchemy' => 
+            array (
+                0 => __DIR__ . '/..' . '/alchemy/binary-driver/src',
+            ),
+        ),
     );
 
     public static $classMap = array (
         'CreateEventsTable' => __DIR__ . '/../..' . '/database/migrations/2016_08_16_183621_create_events_table.php',
         'CreateFeedsTable' => __DIR__ . '/../..' . '/database/migrations/2016_08_16_154509_create_feeds_table.php',
         'CreateImageCoversTable' => __DIR__ . '/../..' . '/database/migrations/2016_08_16_155444_create_image_covers_table.php',
+        'CreateImageEventsTable' => __DIR__ . '/../..' . '/database/migrations/2016_08_22_170334_create_image_events_table.php',
         'CreateImagesTable' => __DIR__ . '/../..' . '/database/migrations/2016_08_16_153654_create_images_table.php',
         'CreateMembersTable' => __DIR__ . '/../..' . '/database/migrations/2016_08_16_145800_create_members_table.php',
+        'CreatePasswordResetsTable' => __DIR__ . '/../..' . '/database/migrations/2014_10_12_100000_create_password_resets_table.php',
         'CreateUserEventsTable' => __DIR__ . '/../..' . '/database/migrations/2016_08_16_160600_create_user_events_table.php',
+        'CreateUsersTable' => __DIR__ . '/../..' . '/database/migrations/2014_10_12_000000_create_users_table.php',
         'CreateVideosTable' => __DIR__ . '/../..' . '/database/migrations/2016_08_16_155021_create_videos_table.php',
         'DatabaseSeeder' => __DIR__ . '/../..' . '/database/seeds/DatabaseSeeder.php',
+        'EventTableSeeder' => __DIR__ . '/../..' . '/database/seeds/EventTableSeeder.php',
         'FeedTableSeeder' => __DIR__ . '/../..' . '/database/seeds/FeedTableSeeder.php',
         'File_Iterator' => __DIR__ . '/..' . '/phpunit/php-file-iterator/src/Iterator.php',
         'File_Iterator_Facade' => __DIR__ . '/..' . '/phpunit/php-file-iterator/src/Facade.php',

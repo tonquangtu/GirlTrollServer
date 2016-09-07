@@ -4,6 +4,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\Registrar;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
+use Illuminate\Http\Request;
+use App\Http\Requests\LoginRequest;
 
 class AuthController extends Controller {
 
@@ -33,6 +35,19 @@ class AuthController extends Controller {
 		$this->registrar = $registrar;
 
 		$this->middleware('guest', ['except' => 'getLogout']);
+	}
+
+	public function postLogin(LoginRequest $request){
+		$data = array(
+			'email'=>$request->email,
+			'password'=>$request->password,
+			'active'=>'1',
+		);
+		if($this->auth->attempt($data,$request->has('remember'))){
+			return redirect('home');
+		} else {
+			return redirect('auth/login')->with(['flash_level'=>'danger','flash_message'=>'Tài khoản hoặc mật khẩu không đúng!']);
+		}
 	}
 
 }

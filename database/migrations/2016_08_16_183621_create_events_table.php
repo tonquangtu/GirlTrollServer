@@ -16,7 +16,7 @@ class CreateEventsTable extends Migration {
 		{
 			$table->increments('id');
 			$table->text('title');
-			$table->text('sort_content');
+			$table->text('short_content');
 			$table->text('content');
 			$table->smallInteger('type')->length(6);
 			$table->text('policy');

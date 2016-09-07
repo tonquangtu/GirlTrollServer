@@ -10,6 +10,7 @@ use Image;
 use App\Image as ImageModel;
 use App\Video, App\Member;
 use DB;
+use Thumbnail;
 
 class FeedController extends Controller {
 
@@ -52,19 +53,35 @@ class FeedController extends Controller {
 			$linkFace = $request->input('linkFace');
 			$typeImage = $request->input('type');
 
-			$width = 100;
-			$height = 100;
+			$width = array();
+			$height = array();
 			$pathImg = 'public/image';
 			$pathThumb = 'public/image/thumbnail';
-			$count = 0;
 
 			//Upload feed image
 			for($i=0; $i<$totalFile; $i++){
-				$files[] = $request->file('file_'.$i);
+				if($request->hasFile('file_'.$i)){
+					$files[] = $request->file('file_'.$i);
+				}
 			}
+			//Width and height of thumbnail change when number file change
+			switch(count($files)){
+				case 1: $width[0]=500; $height[0]=500;
+						break;
+				case 2: $width[0]=$width[1]=250; $height[0]=$height[1]=500;
+						break;
+				case 3: $width[0]=500; $width[1]=$width[2]=250; $height[0]=$height[1]=$height[2]=250;
+						break;
+				case 4: $width[0]=$width[1]=$width[2]=$width[3]=250; $height[0]=$height[1]=$height[2]=$height[3]=250;
+						break;
+				default: break;
+			}
+
+			//Save file
+			$i=0;
 			foreach($files as $image){
-				$imagename = changeTitle($image->getClientOriginalName());
-				$this->resizeImagePost($image, $imagename, $width, $height, $pathImg, $pathThumb);
+				$imagename = changeTitle(time().$image->getClientOriginalName());
+				$this->resizeImagePost($image, $imagename, $width[$i], $height[$i], $pathImg, $pathThumb);
 
 				$img = new ImageModel;	
 				$img->url_image = $pathImg.'/'.$imagename;
@@ -73,14 +90,14 @@ class FeedController extends Controller {
 				$img->feed_id = $feed->id;
 				$img->url_image_thumbnail = $pathThumb.'/'.$imagename;
 				$img->save();
-				$count++;
+				$i++;
 			}
 
 			// Add number image to member
-			$member->first()->total_image += $count;
+			$member->first()->total_image += $i;
 			$member->first()->save();
 
-			if($count!=$totalFile){
+			if($i!=$totalFile){
 				$success = 0;
 				$message = "Insert Image Not Enough";
 			} else {
@@ -92,9 +109,12 @@ class FeedController extends Controller {
 
 			//Upload feed video
 			$typeVideo = $request->input('type');
+
+			//0: file, 1: youtube
 			if($typeVideo == 1){
 				$vde = new Video;
 				$vde->url_video = $request->input('youtube');
+				$vde->url_image_thumbnail = '';
 				$vde->type = $typeVideo;
 				$vde->feed_id = $feed->id;
 				$vde->save();
@@ -103,14 +123,27 @@ class FeedController extends Controller {
 				$message = "Success";
 			} else{
 				if($request->hasFile('file')){
-					$video = $request->file('file');
-					$videoname = changeTitle($image->getClientOriginalName());
-					$pathVideo = 'public/video';
-					$video->move($pathVideo, $videoname);
 
+					//save file on system
+					$video = $request->file('file');
+					$videoname = changeTitle(time().$video->getClientOriginalName());
+					$pathVideo = 'public/video';
+					$pathThumb = 'public/video/thumbnail';
+					$video->move($pathVideo,$videoname);
+
+					if($request->hasFile('thumbnailVideo')){
+						$thumbnail = $request->file('thumbnailVideo');
+						$thumbnailname = changeTitle(time().$thumbnail->getClientOriginalName());
+						$thumbnail->move($pathThumb,$thumbnailname);
+					} else{
+						$thumbnailname = 'defaultThumbnail.jpg';
+					}
+
+					//save file on database
 					$vde = new Video;
 					$vde->url_video = $pathVideo.'/'.$videoname;
 					$vde->type = $typeVideo;
+					$vde->url_image_thumbnail = $pathThumb.'/'.$thumbnailname;
 					$vde->feed_id = $feed->id;
 					$vde->save();
 
@@ -125,9 +158,9 @@ class FeedController extends Controller {
 		}
 
 		return Response::json([
-				'success'=>$success,
-				'message'=>$message
-			]);
+			'success'=>$success,
+			'message'=>$message
+		]);
 	}
 
 
@@ -146,12 +179,13 @@ class FeedController extends Controller {
 		//Move image to the pathImg
 		$image->move($pathImg, $imagename);
 		
-		//Create thumbnail and save to the pathThumbnail
+		//Create thumbnail and save to the pathThumbnail use library Image Laravel
 		$img = Image::make($pathImg.'/'.$imagename);
 		$img->resize($width, $height)->save($pathThumb.'/'.$imagename);
 
 		return null;
 	}
+
 
 	/**
 	 * Get List New Feed
@@ -164,7 +198,7 @@ class FeedController extends Controller {
 		$limit         = $request->input('limit');
 
 		//Error if end of feed
-		if($currentFeedId==1){
+		if($currentFeedId==Feed::all()->first()->id){
 			$success     = 0;
 			$data        = [];
 			$afterFeedId = 0;
@@ -179,54 +213,7 @@ class FeedController extends Controller {
 
 			// $feeds = Feed::where('id','<', $current)->orderBy('id','DESC')->take($limit)->get();
 			$feeds = Feed::where('id','<', $current)->orderBy('id','DESC')->take($limit)->get();
-			$data = array();
-			foreach($feeds as $item){
-
-				$arr_image = $item->image()->get();
-				$images = array();
-				foreach($arr_image as $img){
-					$images[] = [
-						'imageId'           => $img->id,
-						'urlImage'          => $img->url_image,
-						'type'              => $img->type,
-						'linkFace'          => $img->link_face,
-						'urlImageThumbnail' => $img->url_image_thumbnail
-					];
-				}
-
-				$arr_video = Feed::find($item->id)->video()->get();
-				$videos = array();
-				foreach($arr_video as $vde){
-					$videos[]=[
-						'videoId'  => $vde->id,
-						'urlVideo' => $vde->url_video,
-						'type'     => $vde->type
-					];
-				}
-				
-				$mem = $item->member()->first();
-				$member= array();
-				$member['memberId']   =$mem->member_id;
-				$member['username']   =$mem->username;
-				$member['rank']       =$mem->rank;
-				$member['like']       =$mem->like;
-				$member['avatarUrl']  =$mem->avatar_url;
-				$member['totalImage'] =$mem->total_image ;
-
-				$mdata = array();
-				$mdata['feedId']  = $item->id;
-				$mdata['title']   = $item->title;
-				$mdata['time']    = $item->time;
-				$mdata['like']    = $item->like;
-				$mdata['comment'] = $item->comment;
-				$mdata['share']   = $item->share;
-				$mdata['school']  = $item->school;
-				$mdata['images']  = $images;
-				$mdata['videos']  = $videos;
-				$mdata['member']  = $member;
-
-				$data[] = $mdata;
-			}
+			$data = $this->getFeed($feeds);
 
 			$success = 1;
 			$afterFeedId = (int)$feeds->last()->id;
@@ -236,12 +223,121 @@ class FeedController extends Controller {
 			'message' => ($success==0)?'End Of Feed':'Success',
 			'data'    => $data,
 			'paging'  => [
-				'beforeFeedId' => $currentFeedId,
-				'afterFeedId'  => $afterFeedId
+				'before' => $currentFeedId,
+				'after'  => $afterFeedId
 			]
 		];
 		return Response::json($send);
 		
+	}
+
+	public function getFeedRefresh(Request $request){
+		// Get data from client
+		$currentFeedId = (int)$request->input('currentFeedId');
+		$limit         = $request->input('limit');
+
+		//currentFeedId == -1 => the first load new feed
+		//currentFeedId == max feed => this is newest feed
+		//else load $limit new feed
+		if($currentFeedId == -1){
+			// $feeds = Feed::where('id','<', $current)->orderBy('id','DESC')->take($limit)->get();
+			$feeds = Feed::orderBy('id','DESC')->take($limit)->get();
+			$data = $this->getFeed($feeds);
+
+			$success = 1;
+			$afterFeedId = (int)$feeds->first()->id;
+			$message = "Success";
+		}else if($currentFeedId==Feed::all()->last()->id){
+			$data = null;
+			$success = 1;
+			$afterFeedId = $currentFeedId;
+			$message = "This is newest Feed";
+		} else {
+			$feeds = Feed::where('id','>',$currentFeedId)->orderBy('id','ASC')->take($limit)->get();
+			//Sort By DESC OF ID
+			$feeds->sortByDesc('id', $options = SORT_REGULAR);
+
+			$data = $this->getFeed($feeds);
+
+			$success = 1;
+			$afterFeedId = (int)$feeds->first()->id;
+			$message = "Success";
+		}
+		$send = [
+			'success' => $success,
+			'message' => $message,
+			'data'    => $data,
+			'paging'  => [
+				'before' => $currentFeedId,
+				'after'  => $afterFeedId
+			]
+		];
+		return Response::json($send);
+	}
+
+	/**
+	 * Get Feed
+	 * @param  Feed $feed [description]
+	 * @return array Feed
+	 */
+	public function getFeed($feeds){
+		$data = array();
+		foreach($feeds as $item){
+
+			$arr_image = $item->image()->get();
+			$images = array();
+			if(count($arr_image)==0){
+				$images = null;
+			}else{
+				foreach($arr_image as $img){
+					$images[] = [
+						'imageId'           => $img->id,
+						'urlImage'          => URLWEB.$img->url_image,
+						'type'              => $img->type,
+						'linkFace'          => $img->link_face,
+						'urlImageThumbnail' => URLWEB.$img->url_image_thumbnail
+					];
+				}
+			}
+			
+
+			$vde = $item->video()->first();
+			$video = array();
+			if(isset($vde->id)){
+				$video = array();
+				$video['videoId']  = $vde->id;
+				$video['urlVideo'] = URLWEB.$vde->url_video;
+				$video['urlVideoThumbnail'] = URLWEB.$vde->url_image_thumbnail;
+				$video['type']     = $vde->type;
+			}else{
+				$video = null;
+			}
+			
+			
+			$mem = $item->member()->first();
+			$member= array();
+			$member['memberId']   =$mem->member_id;
+			$member['username']   =$mem->username;
+			$member['rank']       =$mem->rank;
+			$member['like']       =$mem->like;
+			$member['avatarUrl']  =$mem->avatar_url;
+			$member['totalImage'] =$mem->total_image ;
+
+			$mdata = array();
+			$mdata['feedId']  = $item->id;
+			$mdata['title']   = $item->title;
+			$mdata['time']    = $item->time;
+			$mdata['like']    = $item->like;
+			$mdata['comment'] = $item->comment;
+			$mdata['share']   = $item->share;
+			$mdata['school']  = $item->school;
+			$mdata['images']  = $images;
+			$mdata['video']  = $video;
+			$mdata['member']  = $member;
+
+			$data[] = $mdata;
+		}
+		return $data;
 	}
 
 	/**
@@ -287,56 +383,8 @@ class FeedController extends Controller {
 			$data = [];
 			$afterListIdUsed=0;
 		} else{
-			$data = array();
 			$afterListIdUsed = $listIdUsed;
-			foreach($feeds as $item){
-
-				$arr_image = $item->image()->get();
-				$images = array();
-				foreach($arr_image as $img){
-					$images[] = [
-						'imageId'           => $img->id,
-						'urlImage'          => $img->url_image,
-						'type'              => $img->type,
-						'linkFace'          => $img->link_face,
-						'urlImageThumbnail' => $img->url_image_thumbnail
-					];
-				}
-
-				$arr_video = Feed::find($item->id)->video()->get();
-				$videos = array();
-				foreach($arr_video as $vde){
-					$videos[]=[
-						'videoId'  => $vde->id,
-						'urlVideo' => $vde->url_video,
-						'type'     => $vde->type
-					];
-				}
-
-				$mem = $item->member()->first();
-				$member= array();
-				$member['memberId']   =$mem->member_id;
-				$member['username']   =$mem->username;
-				$member['rank']       =$mem->rank;
-				$member['like']       =$mem->like;
-				$member['avatarUrl']  =$mem->avatar_url;
-				$member['totalImage'] =$mem->total_image ;
-
-				$mdata = array();
-				$mdata['feedId']   = $item->id;
-				$mdata['title']    = $item->title;
-				$mdata['time']     = $item->time;
-				$mdata['like']     = $item->like;
-				$mdata['comment']  = $item->comment;
-				$mdata['share']    = $item->share;
-				$mdata['school']   = $item->school;
-				$mdata['images']   = $images;
-				$mdata['videos']   = $videos;
-				$mdata['member']   = $member;
-
-				$data[] = $mdata;
-				$afterListIdUsed .=','.$item->id;
-			}
+			$data = $this->getFeed($feeds);
 
 			$success = 1;
 		}
@@ -345,8 +393,8 @@ class FeedController extends Controller {
 			'message' => ($success==0)?'End Of Feed':'Success',
 			'data'    => $data,
 			'paging'  => [
-				'beforeListIdUsed' => $listIdUsed,
-				'afterListIdUsed'  => $afterListIdUsed
+				'before' => $listIdUsed,
+				'after'  => $afterListIdUsed
 			]
 		];
 		return Response::json($send);
@@ -403,9 +451,11 @@ class FeedController extends Controller {
 		// Find feed has id = $feedId
 		$feed = Feed::find($feedId);
 		if(isset($feed->id)){
+			$member = $feed->member()->first();
 			if($type==1){
 				if($change=='like'){
 					$feed->like +=1;
+					$member->like+=1;
 				} else if($change=='comment'){
 					$feed->comment +=1;
 				} else if($change=='share'){
@@ -416,6 +466,7 @@ class FeedController extends Controller {
 			} else{
 				if($change=='like'){
 					$feed->like -=1;
+					$member->like -=1;
 				} else if($change=='comment'){
 					$feed->comment -=1;
 				} else if($change=='share'){
@@ -427,6 +478,7 @@ class FeedController extends Controller {
 
 			$feed->vote = $feed->like*0.4 + $feed->comment*0.3 + $feed->share*0.3;
 			$feed->save();
+			$member->save();
 			return 1;
 		}
 
@@ -437,8 +489,8 @@ class FeedController extends Controller {
 	 * Test Post Feed
 	 * @return [type] [description]
 	 */
-	public function testPostFeed(){
-		return view('testPostFeed');
-	}
+	// public function testPostFeed(){
+	// 	return view('testPostFeed');
+	// }
 
 }

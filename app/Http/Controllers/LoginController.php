@@ -17,6 +17,9 @@ class LoginController extends Controller {
 	{
 		$member = Member::where('member_id','=',$request->input('memberId'))->first();
 		if(isset($member->id)){
+			$member->username = $request->input('username');
+			$member->avatar_url = $request->input('avatarUrl');
+			$member->save();
 			$success = 0;
 		}else {
 			$member = new Member;
@@ -24,6 +27,7 @@ class LoginController extends Controller {
 			$member->username = $request->input('username');
 			$member->rank = 0;
 			$member->like = 0;
+			$member->avatar_url = $request->input('avatarUrl');
 			$member->total_image = 0;
 			$member->save();
 			$success = 1;
