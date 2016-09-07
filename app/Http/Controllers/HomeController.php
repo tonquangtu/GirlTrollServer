@@ -35,12 +35,5 @@ class HomeController extends Controller {
 		return view('admin.index');
 	}
 
-	public function getListMember(){
-		$members = Member::paginate(5);
-		$members->setPath(URLWEB.'member');
-		return view('admin.member.list', compact('members'));
-	}
-
-	
 
 }

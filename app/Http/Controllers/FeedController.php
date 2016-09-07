@@ -198,7 +198,7 @@ class FeedController extends Controller {
 		$limit         = $request->input('limit');
 
 		//Error if end of feed
-		if($currentFeedId==1){
+		if($currentFeedId==Feed::all()->first()->id){
 			$success     = 0;
 			$data        = [];
 			$afterFeedId = 0;
@@ -451,9 +451,11 @@ class FeedController extends Controller {
 		// Find feed has id = $feedId
 		$feed = Feed::find($feedId);
 		if(isset($feed->id)){
+			$member = $feed->member()->first();
 			if($type==1){
 				if($change=='like'){
 					$feed->like +=1;
+					$member->like+=1;
 				} else if($change=='comment'){
 					$feed->comment +=1;
 				} else if($change=='share'){
@@ -464,6 +466,7 @@ class FeedController extends Controller {
 			} else{
 				if($change=='like'){
 					$feed->like -=1;
+					$member->like -=1;
 				} else if($change=='comment'){
 					$feed->comment -=1;
 				} else if($change=='share'){
@@ -475,6 +478,7 @@ class FeedController extends Controller {
 
 			$feed->vote = $feed->like*0.4 + $feed->comment*0.3 + $feed->share*0.3;
 			$feed->save();
+			$member->save();
 			return 1;
 		}
 
@@ -485,8 +489,8 @@ class FeedController extends Controller {
 	 * Test Post Feed
 	 * @return [type] [description]
 	 */
-	public function testPostFeed(){
-		return view('testPostFeed');
-	}
+	// public function testPostFeed(){
+	// 	return view('testPostFeed');
+	// }
 
 }

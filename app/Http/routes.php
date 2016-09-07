@@ -11,6 +11,7 @@
 |
 */
 define('URLWEB','http://girltroll.890m.com/');
+// define('URLWEB','http://192.168.1.99/GirlTroll/');
 Route::get('/', 'WelcomeController@index');
 
 Route::get('home', 'HomeController@index');
@@ -22,9 +23,7 @@ Route::controllers([
 
 Route::post('auth/login',['as'=>'postLogin','uses'=>'Auth\AuthController@postLogin']);
 
-Route::get('member',['as'=>'getListMember', 'uses'=>'HomeController@getListMember']);
-
-
+Route::get('member',['as'=>'getListMember', 'uses'=>'WelcomeController@getListMember']);
 
 
 /**
@@ -50,7 +49,7 @@ Route::post('feed/top',['as'=>'getTopFeed', 'uses'=>'FeedController@getTopFeed']
 /**
  * Update feed when like or unlike
  */
-Route::post('feed/like',['as'=>'postLike', 'uses'=>'FeedController@postLike']);
+Route::get('feed/like',['as'=>'postLike', 'uses'=>'FeedController@postLike']);
 
 /**
  * Update feed when comment or uncomment
@@ -112,3 +111,7 @@ Route::resource('event','EventController');
  * Test Post Feed
  */
 Route::get('testPostFeed','FeedController@testPostFeed');
+
+/**
+ * Hom 
+ */

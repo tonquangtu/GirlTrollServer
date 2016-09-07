@@ -95,26 +95,6 @@ class EventController extends Controller {
 	}
 
 	/**
-	 * Get List Event for Web
-	 * @return [type] [description]
-	 */
-	public function getListEvent(){
-		$events = Event::paginate(10);
-		$events->setPath(URLWEB.'event/list');
-		return view('admin.event.list',compact('events'));
-	}
-
-	/**
-	 * Show the form for creating a new resource.
-	 *
-	 * @return Response
-	 */
-	public function create()
-	{
-		return view('admin.event.add');
-	}
-
-	/**
 	 * Store a newly created resource in storage.
 	 *
 	 * @return Response
@@ -125,33 +105,26 @@ class EventController extends Controller {
 		$event->time_start = date_format(date_create($request->input('time_start')),'Y-m-d');
 		$event->time_end = date_format(date_create($request->input('time_end')),'Y-m-d');
 		if(strtotime($event->time_end)-strtotime($event->time_start)<=0){
-			return redirect()->route('event.create')->with(['flash_level'=>'danger','flash_message'=>'Time Start smaller than time end']);
+			$success = 0;
+			$message = 'Time Start smaller than time end';
+		}else{
+			$event->title = $request->input('title');
+			$event->short_content = $request->input('short_content');
+			$event->content = $request->input('content');
+			$event->type = $request->input('type');
+			$event->policy = $request->input('policy');
+			$event->active = $request->input('active');
+			$event->save();
+			$success = 1;
+			$message = 'Add New Success';
 		}
-		$event->title = $request->input('title');
-		$event->short_content = $request->input('short_content');
-		$event->content = $request->input('content');
-		$event->type = $request->input('type');
-		$event->policy = $request->input('policy');
-		$event->active = $request->input('active');
-		$event->save();
-		return redirect()->route('getListEvent')->with(['flash_level'=>'success','flash_message'=>'Add New Success']);
+		$send = [
+			'success' => $success,
+			'message' => $message,
+		];
+		return Response::json($send);
 	}
 
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function edit($id)
-	{	
-		$event = Event::find($id);
-		if(isset($event->id)){
-			return view('admin.event.edit',compact('event'));
-		}else{
-			return redirect()->route('getListEvent')->width(['flash_level'=>'danger','flash_message'=>'Not found event']);
-		}
-	}
 
 	/**
 	 * Update the specified resource in storage.
@@ -166,15 +139,24 @@ class EventController extends Controller {
 		$event->time_end = date_format(date_create($request->input('time_end')),'Y-m-d');
 		if(strtotime($event->time_end)-strtotime($event->time_start)<=0){
 			return redirect()->route('event.create')->with(['flash_level'=>'danger','flash_message'=>'Time Start smaller than time end']);
+			$success = 0;
+			$message = 'Time Start smaller than time end';
+		}else{
+			$event->title = $request->input('title');
+			$event->short_content = $request->input('short_content');
+			$event->content = $request->input('content');
+			$event->type = $request->input('type');
+			$event->policy = $request->input('policy');
+			$event->active = $request->input('active');
+			$event->save();
+			$success = 1;
+			$message = 'Update Success';
 		}
-		$event->title = $request->input('title');
-		$event->short_content = $request->input('short_content');
-		$event->content = $request->input('content');
-		$event->type = $request->input('type');
-		$event->policy = $request->input('policy');
-		$event->active = $request->input('active');
-		$event->save();
-		return redirect()->route('getListEvent')->with(['flash_level'=>'success','flash_message'=>'Update Success']);
+		$send = [
+			'success' => $success,
+			'message' => $message,
+		];
+		return Response::json($send);
 	}
 
 	/**
@@ -188,9 +170,15 @@ class EventController extends Controller {
 		$event = Event::find($id);
 		if(isset($event->id)){
 			$event->delete();
-			return redirect()->route('getListEvent')->with(['flash_level'=>'success','flash_message'=>'Delete success']);
+			return Response::json([
+			'success' => 1,
+			'message' => 'Delete event success',
+		]);
 		}
-		return redirect()->route('getListEvent')->with(['flash_level'=>'danger','flash_message'=>'Not found event']);
+		return Response::json([
+			'success' => 0,
+			'message' => 'Not found event',
+		]);
 	}
 
 	/**
@@ -220,7 +208,10 @@ class EventController extends Controller {
 	public function getAddImageEvent($id){
 		$event = Event::find($id);
 		if(!isset($event->id)){
-			return redirect()->route('getListEvent')->with(['flash_level'=>'danger','flash_message'=>'Not found event']);
+			return Response::json([
+				'success'=>0,
+				'message'=>'Not found event'
+			]);
 		}
 		$imageevents = ImageEvent::where('event_id','=',$id)->get();
 		$images = array();
@@ -264,15 +255,29 @@ class EventController extends Controller {
 		}
 		if(count($images)==0){
 			return redirect()->route('getListEvent')->with(['flash_level'=>'danger','flash_message'=>'Not found Image to Add']);
+			return Response::json([
+				'success'=>0,
+				'message'=>'Not found Image to Add'
+			]);
 		}
-		return view('admin.event.image',compact('images','id'))->with('numberAdded',count($imageevents));
-			
+		return Response::json([
+			'success'=>1,
+			'message'=>'Success',
+			'data'=>[
+				'images'=>$images,
+				'id' => $id,
+				'numberAdded'=>count($imageevents)
+			]
+		]);	
 	}
 
 	public function postAddImageEvent(Request $request, $id){
 		$images = $request->input('images');
 		if(count($images)==0){
-			return redirect()->route('getListEvent')->with(['flash_level'=>'danger','flash_message'=>'Not add image']);
+			return Response::json([
+				'success'=>0,
+				'message'=>'Not add image'
+			]);
 		}
 		foreach($images as $image){
 			$imageevent = ImageEvent::where('image_id','=',$image)->where('event_id','=',$id)->first();
@@ -284,6 +289,9 @@ class EventController extends Controller {
 			$imageevent->event_id = $id;
 			$imageevent->save();
 		}
-		return redirect()->route('getListEvent')->with(['flash_level'=>'success','flash_message'=>'Add Image for event success']);
+		return Response::json([
+			'success'=> 1,
+			'message'=> 'Add Image for event success'
+		]);
 	}
 }

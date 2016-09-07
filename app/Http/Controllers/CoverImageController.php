@@ -60,26 +60,6 @@ class CoverImageController extends Controller {
 	}
 
 	/**
-	 * Get List Cover Image for Admin
-	 * @return [type] [description]
-	 */
-	public function getListCoverImage(){
-		$coverimages = ImageCover::paginate(10);
-		$coverimages->setPath(URLWEB.'coverimage/list');
-		return view('admin.coverimage.list',compact('coverimages'));
-	}
-
-	/**
-	 * Show the form for creating a new resource.
-	 *
-	 * @return Response
-	 */
-	public function create()
-	{
-		return view('admin.coverimage.add');
-	}
-
-	/**
 	 * Store a newly created resource in storage.
 	 *
 	 * @return Response
@@ -113,22 +93,19 @@ class CoverImageController extends Controller {
 	 */
 	public function show($id)
 	{
-		//
-	}
-
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function edit($id)
-	{
 		$coverimage = ImageCover::find($id);
 		if(isset($coverimage->id)){
-			return view('admin.coverimage.edit',compact('coverimage'));
+			return Response::json([
+				'success'=>1,
+				'message'=>'Success',
+				'data'=>$coverimage
+				]);
 		}
-		return redirect()->route('getListCoverImage')->with(['flash_level'=>'danger','flash_message'=>'Not found image cover']);
+		return Response::json([
+			'success'=>0,
+			'message'=>'Not found cover image',
+			'data'=>null
+			]);
 	}
 
 	/**
@@ -141,21 +118,11 @@ class CoverImageController extends Controller {
 	{
 		$coverimage = ImageCover::find($id);
 		$coverimage->title=$request->input('title');
-		// if($request->hasFile('image_new')){
-		// 	$image = $request->file('image_new');
-		// 	$filename = changeTitle($image->getClientOriginalName());
-		// 	$pathImg = 'public/imagecover';
-		// 	$pathThumb = 'public/imagecover/thumbnail';
-		// 	$width = 100;
-		// 	$height = 100;
-		// 	$this->resizeImageCover($image,$filename,$width,$height,$pathImg,$pathThumb);
-		// 	File::delete($coverimage->url_image);
-		// 	File::delete($coverimage->url_image_thumbnail);
-		// 	$coverimage->url_image = $pathImg.'/'.$filename;
-		// 	$coverimage->url_image_thumbnail = $pathThumb.'/'.$filename;
-		// }
 		$coverimage->save();
-		return redirect()->route('getListCoverImage')->with(['flash_level'=>'success','flash_message'=>'Update success']);
+		return Response::json([
+				'success'=>1,
+				'message'=>'Update success'
+			]);
 	}
 
 	/**
@@ -173,9 +140,15 @@ class CoverImageController extends Controller {
 				File::delete($coverimage->url_image);
 			if(File::exists($coverimage->url_image_thumbnail))
 				File::delete($coverimage->url_image_thumbnail);
-			return redirect()->route('getListCoverImage')->with(['flash_level'=>'success','flash_message'=>'Delete success']);
+			return Response::json([
+				'success'=>1,
+				'message'=>'Delete success'
+			]);
 		}
-		return redirect()->route('getListCoverImage')->with(['flash_level'=>'danger','flash_message'=>'Can\'t delete image']);
+		return Response::json([
+				'success'=>0,
+				'message'=>'Can\'t delete image'
+			]);
 	}
 
 	/**
