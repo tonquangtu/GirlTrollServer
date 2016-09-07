@@ -8,7 +8,7 @@ use App\Feed;
 use Response;
 use Image;
 use App\Image as ImageModel;
-use App\Video, App\Member;
+use App\Video, App\Member, App\MemberLikeFeed;
 use DB;
 use Thumbnail;
 
@@ -194,6 +194,7 @@ class FeedController extends Controller {
 	 */
 	public function getNewFeed(Request $request){
 		// Get data from client
+		$memberId = $request->input('memberId');
 		$currentFeedId = (int)$request->input('currentFeedId');
 		$limit         = $request->input('limit');
 
@@ -213,7 +214,7 @@ class FeedController extends Controller {
 
 			// $feeds = Feed::where('id','<', $current)->orderBy('id','DESC')->take($limit)->get();
 			$feeds = Feed::where('id','<', $current)->orderBy('id','DESC')->take($limit)->get();
-			$data = $this->getFeed($feeds);
+			$data = $this->getFeed($feeds, $memberId);
 
 			$success = 1;
 			$afterFeedId = (int)$feeds->last()->id;
@@ -233,6 +234,7 @@ class FeedController extends Controller {
 
 	public function getFeedRefresh(Request $request){
 		// Get data from client
+		$memberId = $request->input('memberId');
 		$currentFeedId = (int)$request->input('currentFeedId');
 		$limit         = $request->input('limit');
 
@@ -257,7 +259,7 @@ class FeedController extends Controller {
 			//Sort By DESC OF ID
 			$feeds->sortByDesc('id', $options = SORT_REGULAR);
 
-			$data = $this->getFeed($feeds);
+			$data = $this->getFeed($feeds, $memberId);
 
 			$success = 1;
 			$afterFeedId = (int)$feeds->first()->id;
@@ -280,7 +282,7 @@ class FeedController extends Controller {
 	 * @param  Feed $feed [description]
 	 * @return array Feed
 	 */
-	public function getFeed($feeds){
+	public function getFeed($feeds, $memberId){
 		$data = array();
 		foreach($feeds as $item){
 
@@ -307,11 +309,12 @@ class FeedController extends Controller {
 				$video = array();
 				$video['videoId']  = $vde->id;
 				$video['urlVideo'] = URLWEB.$vde->url_video;
-				$video['urlVideoThumbnail'] = URLWEB.$vde->url_image_thumbnail;
+				$video['thumbnailVideoUrl'] = URLWEB.$vde->url_image_thumbnail;
 				$video['type']     = $vde->type;
 			}else{
 				$video = null;
 			}
+
 			
 			
 			$mem = $item->member()->first();
@@ -323,10 +326,19 @@ class FeedController extends Controller {
 			$member['avatarUrl']  =$mem->avatar_url;
 			$member['totalImage'] =$mem->total_image ;
 
+
+			$isLike = MemberLikeFeed::where('member_id', $memberId)->where('feed_id',$item->id)->first();
+			if(isset($isLike->id)){
+				$liked = $isLike->is_like;
+			}else{
+				$liked = 0;
+			}
+
 			$mdata = array();
 			$mdata['feedId']  = $item->id;
 			$mdata['title']   = $item->title;
 			$mdata['time']    = $item->time;
+			$mdata['isLike']  = $liked;
 			$mdata['like']    = $item->like;
 			$mdata['comment'] = $item->comment;
 			$mdata['share']   = $item->share;
@@ -357,6 +369,7 @@ class FeedController extends Controller {
 		$week = date('W', strtotime(date('Y-m-d')));
 		
 		// Get data from client
+		$memberId = $request->input('memberId');
 		$listIdUsed = $request->input('listIdUsed');
 		$limit      = $request->input('limit');
 		$type       = (int)$request->input('type');
@@ -384,7 +397,7 @@ class FeedController extends Controller {
 			$afterListIdUsed=0;
 		} else{
 			$afterListIdUsed = $listIdUsed;
-			$data = $this->getFeed($feeds);
+			$data = $this->getFeed($feeds,$memberId);
 
 			$success = 1;
 		}

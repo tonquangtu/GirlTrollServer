@@ -19,4 +19,8 @@ class Feed extends Model {
 	public function member(){
 		return $this->belongsTo('App\Member');
 	}
+
+	public function memberlikefeed(){
+		return $this->hasMany('App\MemberLikeFeed');
+	}
 }

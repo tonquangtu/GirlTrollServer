@@ -12,11 +12,9 @@ return array(
     $vendorDir . '/ircmaxell/password-compat/lib/password.php',
     $vendorDir . '/paragonie/random_compat/lib/random.php',
     $vendorDir . '/symfony/polyfill-php56/bootstrap.php',
-    $vendorDir . '/guzzlehttp/psr7/src/functions_include.php',
     $vendorDir . '/psy/psysh/src/Psy/functions.php',
     $vendorDir . '/danielstjules/stringy/src/Create.php',
-    $vendorDir . '/guzzlehttp/promises/src/functions_include.php',
+    $vendorDir . '/guzzlehttp/psr7/src/functions_include.php',
     $vendorDir . '/laravel/framework/src/Illuminate/Foundation/helpers.php',
     $vendorDir . '/laravel/framework/src/Illuminate/Support/helpers.php',
-    $vendorDir . '/guzzlehttp/guzzle/src/functions_include.php',
 );

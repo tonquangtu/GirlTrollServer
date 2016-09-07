@@ -24,4 +24,8 @@ class Member extends Model {
 	public function userevent(){
 		return $this->hasMany('App\UserEvent');
 	}
+
+	public function memberlikefeed(){
+		return $this->hasMany('App\MemberLikeFeed');
+	}
 }
