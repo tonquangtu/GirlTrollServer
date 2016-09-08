@@ -198,6 +198,18 @@ class FeedController extends Controller {
 		$currentFeedId = (int)$request->input('currentFeedId');
 		$limit         = $request->input('limit');
 
+		//If member not login
+		if($memberId==''){
+			$idMember = '';		
+		}else{
+			$member = Member::where('member_id',$memberId)->first();
+			if(isset($member->id)){
+				$idMember = $member->id;
+			}else{
+				$idMember = '';
+			}
+		}
+
 		//Error if end of feed
 		if($currentFeedId==Feed::all()->first()->id){
 			$success     = 0;
@@ -214,7 +226,7 @@ class FeedController extends Controller {
 
 			// $feeds = Feed::where('id','<', $current)->orderBy('id','DESC')->take($limit)->get();
 			$feeds = Feed::where('id','<', $current)->orderBy('id','DESC')->take($limit)->get();
-			$data = $this->getFeed($feeds, $memberId);
+			$data = $this->getFeed($feeds, $idMember);
 
 			$success = 1;
 			$afterFeedId = (int)$feeds->last()->id;
@@ -238,13 +250,26 @@ class FeedController extends Controller {
 		$currentFeedId = (int)$request->input('currentFeedId');
 		$limit         = $request->input('limit');
 
+
+		//If member not login
+		if($memberId==''){
+			$idMember = '';		
+		}else{
+			$member = Member::where('member_id',$memberId)->first();
+			if(isset($member->id)){
+				$idMember = $member->id;
+			}else{
+				$idMember = '';
+			}
+		}
 		//currentFeedId == -1 => the first load new feed
 		//currentFeedId == max feed => this is newest feed
 		//else load $limit new feed
 		if($currentFeedId == -1){
 			// $feeds = Feed::where('id','<', $current)->orderBy('id','DESC')->take($limit)->get();
 			$feeds = Feed::orderBy('id','DESC')->take($limit)->get();
-			$data = $this->getFeed($feeds);
+			
+			$data = $this->getFeed($feeds, $idMember);
 
 			$success = 1;
 			$afterFeedId = (int)$feeds->first()->id;
@@ -259,7 +284,7 @@ class FeedController extends Controller {
 			//Sort By DESC OF ID
 			$feeds->sortByDesc('id', $options = SORT_REGULAR);
 
-			$data = $this->getFeed($feeds, $memberId);
+			$data = $this->getFeed($feeds, $idMember);
 
 			$success = 1;
 			$afterFeedId = (int)$feeds->first()->id;
@@ -280,9 +305,10 @@ class FeedController extends Controller {
 	/**
 	 * Get Feed
 	 * @param  Feed $feed [description]
+	 * @param  Integer $idMember [Is id of member (not member_id of member)]
 	 * @return array Feed
 	 */
-	public function getFeed($feeds, $memberId){
+	public function getFeed($feeds, $idMember){
 		$data = array();
 		foreach($feeds as $item){
 
@@ -327,7 +353,7 @@ class FeedController extends Controller {
 			$member['totalImage'] =$mem->total_image ;
 
 
-			$isLike = MemberLikeFeed::where('member_id', $memberId)->where('feed_id',$item->id)->first();
+			$isLike = MemberLikeFeed::where('member_id', $idMember)->where('feed_id',$item->id)->first();
 			if(isset($isLike->id)){
 				$liked = $isLike->is_like;
 			}else{
@@ -374,6 +400,18 @@ class FeedController extends Controller {
 		$limit      = $request->input('limit');
 		$type       = (int)$request->input('type');
 
+		//If member not login
+		if($memberId==''){
+			$idMember = '';		
+		}else{
+			$member = Member::where('member_id',$memberId)->first();
+			if(isset($member->id)){
+				$idMember = $member->id;
+			}else{
+				$idMember = '';
+			}
+		}
+		
 		//Add ids to array
 		$arr_idUsed = explode(',', $listIdUsed);
 
@@ -397,7 +435,7 @@ class FeedController extends Controller {
 			$afterListIdUsed=0;
 		} else{
 			$afterListIdUsed = $listIdUsed;
-			$data = $this->getFeed($feeds,$memberId);
+			$data = $this->getFeed($feeds,$idMember);
 
 			$success = 1;
 		}
@@ -419,83 +457,57 @@ class FeedController extends Controller {
 	 * @return [type]           [description]
 	 */
 	public function postLike(Request $request){
-		$success = $this->postUpdate($request, 'like');
-		return Response::json([
-			'success' => $success,
-			'message' => ($success==0)?'Can\'t change':'Success'
-			]);
-	}
-
-	/**
-	 * Update when comment or uncomment
-	 * @param  Request $request [description]
-	 * @return [type]           [description]
-	 */
-	public function postComment(Request $request){
-		$success = $this->postUpdate($request, 'comment');
-		return Response::json([
-			'success' => $success,
-			'message' => ($success==0)?'Can\'t change':'Success'
-			]);
-	}
-
-	/**
-	 * Update when share or unshare
-	 * @param  Request $request [description]
-	 * @return [type]           [description]
-	 */
-	public function postShare(Request $request){
-		$success = $this->postUpdate($request, 'share');
-		return Response::json([
-			'success' => $success,
-			'message' => ($success==0)?'Can\'t change':'Success'
-			]);
-	}
-
-
-	/**
-	 * Update when change of like, comment, share
-	 */
-	public function postUpdate(Request $request, $change){
 		// Get data form client
+		$memberId = $request->input('memberId');
 		$feedId = $request->input('feedId');
 		$type = $request->input('type');
 
-		// Find feed has id = $feedId
+		// Member not login
+		if($memberId==''){
+			return Response::json([
+			'success' => 0,
+			'message' =>'Not login'
+			]);
+		}
+
+		//Update like of feed and like of member
 		$feed = Feed::find($feedId);
 		if(isset($feed->id)){
 			$member = $feed->member()->first();
 			if($type==1){
-				if($change=='like'){
-					$feed->like +=1;
-					$member->like+=1;
-				} else if($change=='comment'){
-					$feed->comment +=1;
-				} else if($change=='share'){
-					$feed->share +=1;
-				} else{
-					return 0;
-				}
-			} else{
-				if($change=='like'){
-					$feed->like -=1;
-					$member->like -=1;
-				} else if($change=='comment'){
-					$feed->comment -=1;
-				} else if($change=='share'){
-					$feed->share -=1;
-				} else{
-					return 0;
-				}
+				$feed->like++;
+				$member->like++;
 			}
-
-			$feed->vote = $feed->like*0.4 + $feed->comment*0.3 + $feed->share*0.3;
+			else{
+				$feed->like--;
+				$member->like--;
+			}
 			$feed->save();
 			$member->save();
-			return 1;
 		}
 
-		return 0;
+		//Get id of member has member_id = memberId
+		//If this is first time member like feed then create 1 record on table
+		//MemberLikeFeed else update is_like for record
+		$memberLike = Member::where('member_id',$memberId)->first();
+		$isLike = MemberLikeFeed::where('member_id',$memberLike->id)->where('feed_id', $feedId)->first();
+		
+		if(isset($isLike->id)){
+			$isLike->is_like=$type;
+			$isLike->save();
+		}else{
+			$isLike=new MemberLikeFeed;
+			
+			$isLike->member_id = $memberLike->id;
+			$isLike->feed_id = $feedId;
+			$isLike->is_like = $type;
+			$isLike->save();
+		}
+		// $success = $this->postUpdate($request, 'like');
+		return Response::json([
+			'success' => 1,
+			'message' => 'Success'
+			]);
 	}
 
 	/**

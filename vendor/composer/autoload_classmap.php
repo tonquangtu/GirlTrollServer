@@ -6,11 +6,13 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'CreateCommentsTable' => $baseDir . '/database/migrations/2016_09_08_074601_create_comments_table.php',
     'CreateEventsTable' => $baseDir . '/database/migrations/2016_08_16_183621_create_events_table.php',
     'CreateFeedsTable' => $baseDir . '/database/migrations/2016_08_16_154509_create_feeds_table.php',
     'CreateImageCoversTable' => $baseDir . '/database/migrations/2016_08_16_155444_create_image_covers_table.php',
     'CreateImageEventsTable' => $baseDir . '/database/migrations/2016_08_22_170334_create_image_events_table.php',
     'CreateImagesTable' => $baseDir . '/database/migrations/2016_08_16_153654_create_images_table.php',
+    'CreateMemberLikeCommentsTable' => $baseDir . '/database/migrations/2016_09_08_090321_create_member_like_comments_table.php',
     'CreateMemberLikeFeedsTable' => $baseDir . '/database/migrations/2016_09_08_011808_create_member_like_feeds_table.php',
     'CreateMembersTable' => $baseDir . '/database/migrations/2016_08_16_145800_create_members_table.php',
     'CreatePasswordResetsTable' => $baseDir . '/database/migrations/2014_10_12_100000_create_password_resets_table.php',

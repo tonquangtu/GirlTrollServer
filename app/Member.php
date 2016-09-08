@@ -28,4 +28,8 @@ class Member extends Model {
 	public function memberlikefeed(){
 		return $this->hasMany('App\MemberLikeFeed');
 	}
+
+	public function comment(){
+		return $this->hasMany('App\Comment');
+	}
 }

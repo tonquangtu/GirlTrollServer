@@ -49,17 +49,27 @@ Route::post('feed/top',['as'=>'getTopFeed', 'uses'=>'FeedController@getTopFeed']
 /**
  * Update feed when like or unlike
  */
-Route::get('feed/like',['as'=>'postLike', 'uses'=>'FeedController@postLike']);
+Route::post('feed/like',['as'=>'postLike', 'uses'=>'FeedController@postLike']);
 
 /**
- * Update feed when comment or uncomment
+ * Post comment
  */
-Route::post('feed/comment',['as'=>'postComment', 'uses'=>'FeedController@postComment']);
+Route::post('feed/comment/post',['as'=>'postComment', 'uses'=>'FeedController@postComment']);
 
 /**
- * Update feed when share or unshare
+ * Load Comment
  */
-Route::post('feed/share',['as'=>'postShare', 'uses'=>'FeedController@postShare']);
+Route::post('feed/comment/load',['as'=>'loadComment', 'uses'=>'FeedController@loadComment']);
+
+/**
+ * Refresh Comment
+ */
+Route::get('feed/comment/refresh',['as'=>'refreshComment', 'uses'=>'FeedController@refreshComment']);
+
+/**
+ * Delete Comment
+ */
+Route::get('feed/comment/delete',['as'=>'deleteComment', 'uses'=>'FeedController@deleteComment']);
 
 /**
  * Save a new feed
@@ -72,25 +82,9 @@ Route::resource('feed','FeedController',['only'=>'store']);
 Route::post('coverimage',['as'=>'postCoverImage','uses'=>'CoverImageController@getCoverImage']);
 
 /**
- * Get List Cover Image for Web
- */
-Route::get('coverimage/list',['as'=>'getListCoverImage','uses'=>'CoverImageController@getListCoverImage']);
-
-/**
- * Create, Update, Delete Cover Image for Web
- */
-Route::resource('coverimage','CoverImageController',['except'=>'index']);
-
-/**
  * Save a userevent when use complete event
  */
 Route::post('event/complete',['as'=>'eventcomplete','uses'=>'EventController@postEventComplete']);
-
-/**
- * Get List Event For Web
- */
-
-Route::get('event/list',['as'=>'getListEvent','uses'=>'EventController@getListEvent']);
 
 /**
  * Add Image for Event
