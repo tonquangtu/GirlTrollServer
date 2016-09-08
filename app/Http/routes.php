@@ -54,22 +54,27 @@ Route::post('feed/like',['as'=>'postLike', 'uses'=>'FeedController@postLike']);
 /**
  * Post comment
  */
-Route::post('feed/comment/post',['as'=>'postComment', 'uses'=>'FeedController@postComment']);
+Route::post('feed/comment/post',['as'=>'postComment', 'uses'=>'CommentController@postComment']);
 
 /**
  * Load Comment
  */
-Route::post('feed/comment/load',['as'=>'loadComment', 'uses'=>'FeedController@loadComment']);
+Route::get('feed/comment/load',['as'=>'loadComment', 'uses'=>'CommentController@loadComment']);
 
 /**
  * Refresh Comment
  */
-Route::get('feed/comment/refresh',['as'=>'refreshComment', 'uses'=>'FeedController@refreshComment']);
+Route::get('feed/comment/refresh',['as'=>'refreshComment', 'uses'=>'CommentController@refreshComment']);
 
 /**
  * Delete Comment
  */
-Route::get('feed/comment/delete',['as'=>'deleteComment', 'uses'=>'FeedController@deleteComment']);
+Route::get('feed/comment/delete',['as'=>'deleteComment', 'uses'=>'CommentController@deleteComment']);
+
+/**
+ * Like Comment
+ */
+Route::post('feed/comment/like',['as'=>'likeComment', 'uses'=>'CommentController@likeComment']);
 
 /**
  * Save a new feed

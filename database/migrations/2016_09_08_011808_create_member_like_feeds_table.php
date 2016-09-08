@@ -18,8 +18,8 @@ class CreateMemberLikeFeedsTable extends Migration {
 			$table->integer('member_id')->unsigned();
 			$table->integer('feed_id')->unsigned();
 			$table->tinyInteger('is_like');
-			$table->foreign('member_id')->references('id')->on('member');
-			$table->foreign('feed_id')->references('id')->on('feed');
+			$table->foreign('member_id')->references('id')->on('member')->onDelete('cascade');
+			$table->foreign('feed_id')->references('id')->on('feed')->onDelete('cascade');
 			// $table->timestamps();
 		});
 	}

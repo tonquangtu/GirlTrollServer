@@ -19,9 +19,9 @@ class CreateCommentsTable extends Migration {
 			$table->integer('feed_id')->unsigned();
 			$table->text('comment');
 			$table->bigInteger('num_like');
-			$table->timestamps();
-			$table->foreign('member_id')->references('id')->on('member');
-			$table->foreign('feed_id')->references('id')->on('feed');
+			$table->datetime('time');
+			$table->foreign('member_id')->references('id')->on('member')->onDelete('cascade');
+			$table->foreign('feed_id')->references('id')->on('feed')->onDelete('cascade');
 		});
 	}
 

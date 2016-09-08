@@ -4,6 +4,10 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
+use App\Member;
+use App\Comment;
+use Response;
+use App\MemberLikeComment;
 
 class CommentController extends Controller {
 
@@ -61,17 +65,23 @@ class CommentController extends Controller {
 				$idMember = '';
 			}
 		}
-
-		//Error if end of comment of feed
-		if($currentCommentId==Comment::where('feed_id',$feedId)->first()->id){
+		//If not comment of feed
+		if(count(Comment::where('feed_id',$feedId)->get())==0){
 			$success     = 0;
 			$data        = [];
-			$afterFeedId = 0;
+			$afterCommentId = 0;
+		}
+
+		//Error if end of comment of feed
+		elseif($currentCommentId==Comment::where('feed_id',$feedId)->first()->id){
+			$success     = 0;
+			$data        = [];
+			$afterCommentId = 0;
 		} else{
 
 			//currentCommentId == -1 => the first load comment of feed
 			if($currentCommentId == -1){
-				$current = Comment::where('feed_id',$feedId)->last()->id+1;
+				$current = Comment::where('feed_id',$feedId)->get()->last()->id+1;
 			} else{
 				$current = $currentCommentId;
 			}
@@ -113,10 +123,18 @@ class CommentController extends Controller {
 				$idMember = '';
 			}
 		}
+
+		//If not comment of feed
+		if(count(Comment::where('feed_id',$feedId)->get())==0){
+			$success     = 0;
+			$data        = [];
+			$afterCommentId = 0;
+		}
+
 		//currentCommentId == -1 => the first load comment of feed
 		//currentCommentId == max comment => this is newest comment of feed
 		//else load $limit new comment of feed
-		if($currentCommentId == -1){
+		elseif($currentCommentId == -1){
 			$comment = Comment::where('feed_id',$feedId)->orderBy('id','DESC')->take($limit)->get();
 			
 			$data = $this->getComment($comment, $idMember);
@@ -124,7 +142,7 @@ class CommentController extends Controller {
 			$success = 1;
 			$afterCommentId = (int)$comment->first()->id;
 			$message = "Success";
-		}else if($currentCommentId==Comment::where('feed_id', $feedId)->last()->id){
+		}elseif($currentCommentId==Comment::where('feed_id', $feedId)->get()->last()->id){
 			$data = null;
 			$success = 1;
 			$afterCommentId = $currentCommentId;
@@ -184,7 +202,7 @@ class CommentController extends Controller {
 			$mdata['commentId']  = $item->id;
 			$mdata['numLike']   = $item->num_like;
 			$mdata['isLike']  = $liked;
-			$mdata['time']    = $item->created_at;
+			$mdata['time']    = $item->time;
 			$mdata['member']  = $member;
 
 			$data[] = $mdata;
@@ -237,5 +255,60 @@ class CommentController extends Controller {
 				]);
 			}
 		}
+	}
+
+	/**
+	 * Update when like or unlike 
+	 * @param  Request $request [description]
+	 * @return [type]           [description]
+	 */
+	public function likeComment(Request $request){
+		// Get data form client
+		$memberId = $request->input('memberId');
+		$commentId = $request->input('commentId');
+		$type = $request->input('type');
+
+		// Member not login
+		if($memberId==''){
+			return Response::json([
+			'success' => 0,
+			'message' =>'Not login'
+			]);
+		}
+
+		//Update like of comment
+		$comment = Comment::find($commentId);
+		if(isset($comment->id)){
+			if($type==1){
+				$comment->num_like++;
+			}
+			else{
+				$comment->num_like--;
+			}
+			$comment->save();
+		}
+
+		//Get id of member has member_id = memberId
+		//If this is first time member like feed then create 1 record on table
+		//MemberLikeFeed else update is_like for record
+		$memberLike = Member::where('member_id',$memberId)->first();
+		$isLike = MemberLikeComment::where('member_id',$memberLike->id)->where('comment_id', $commentId)->first();
+		
+		if(isset($isLike->id)){
+			$isLike->is_like=$type;
+			$isLike->save();
+		}else{
+			$isLike=new MemberLikeComment;
+			
+			$isLike->member_id = $memberLike->id;
+			$isLike->comment_id = $feedId;
+			$isLike->is_like = $type;
+			$isLike->save();
+		}
+		// $success = $this->postUpdate($request, 'like');
+		return Response::json([
+			'success' => 1,
+			'message' => 'Success'
+			]);
 	}
 }

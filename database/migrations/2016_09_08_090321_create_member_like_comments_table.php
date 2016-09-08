@@ -18,8 +18,8 @@ class CreateMemberLikeCommentsTable extends Migration {
 			$table->integer('member_id')->unsigned();
 			$table->integer('comment_id')->unsigned();
 			$table->tinyInteger('is_like');
-			$table->foreign('member_id')->references('id')->on('member');
-			$table->foreign('comment_id')->references('id')->on('comment');
+			$table->foreign('member_id')->references('id')->on('member')->onDelete('cascade');
+			$table->foreign('comment_id')->references('id')->on('comment')->onDelete('cascade');
 
 		});
 	}

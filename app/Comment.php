@@ -15,4 +15,8 @@ class Comment extends Model {
 		return $this->belongsTo('App\Feed');
 	}
 
+	public function memberlikecomment(){
+		return $this->hasMany('App\MemberLikeComment');
+	}
+
 }
