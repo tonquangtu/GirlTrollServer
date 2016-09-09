@@ -18,6 +18,7 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
         'f0906e6318348a765ffb6eb24e0d0938' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/helpers.php',
         '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
+        '12f8f41f7af2079ce2936747184d6d68' => __DIR__ . '/../..' . '/app/MyFunction/function.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -309,11 +310,14 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
     );
 
     public static $classMap = array (
+        'CreateCommentsTable' => __DIR__ . '/../..' . '/database/migrations/2016_09_08_074601_create_comments_table.php',
         'CreateEventsTable' => __DIR__ . '/../..' . '/database/migrations/2016_08_16_183621_create_events_table.php',
         'CreateFeedsTable' => __DIR__ . '/../..' . '/database/migrations/2016_08_16_154509_create_feeds_table.php',
         'CreateImageCoversTable' => __DIR__ . '/../..' . '/database/migrations/2016_08_16_155444_create_image_covers_table.php',
         'CreateImageEventsTable' => __DIR__ . '/../..' . '/database/migrations/2016_08_22_170334_create_image_events_table.php',
         'CreateImagesTable' => __DIR__ . '/../..' . '/database/migrations/2016_08_16_153654_create_images_table.php',
+        'CreateMemberLikeCommentsTable' => __DIR__ . '/../..' . '/database/migrations/2016_09_08_090321_create_member_like_comments_table.php',
+        'CreateMemberLikeFeedsTable' => __DIR__ . '/../..' . '/database/migrations/2016_09_08_011808_create_member_like_feeds_table.php',
         'CreateMembersTable' => __DIR__ . '/../..' . '/database/migrations/2016_08_16_145800_create_members_table.php',
         'CreatePasswordResetsTable' => __DIR__ . '/../..' . '/database/migrations/2014_10_12_100000_create_password_resets_table.php',
         'CreateUserEventsTable' => __DIR__ . '/../..' . '/database/migrations/2016_08_16_160600_create_user_events_table.php',
