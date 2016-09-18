@@ -28,11 +28,11 @@ class FeedController extends Controller {
 		$totalFile = (int)$request->input('totalFile');
 
 		// Check member exist
-		$member = Member::where('member_id','=',$memberId)->get();
-		if(count($member)==0){
+		$member = Member::find($memberId);
+		if(!isset($member)){
 			return Response::json([
 					'success' => 0,
-					'message' => 'Not Found Member Has Member Id'
+					'message' => 'Thành viên không tồn tại'
 				]);
 		}
 
@@ -43,9 +43,9 @@ class FeedController extends Controller {
 		$feed->time = date('Y-m-d H:i:s');
 		$feed->like = 0;
 		$feed->comment = 0;
-		$feed->share = 0;
+		// $feed->share = 0;
 		$feed->vote = 0;
-		$feed->member_id = $member->first()->id;
+		$feed->member_id = $memberId;
 		$feed->save();
 
 		//Add image or video
@@ -99,7 +99,7 @@ class FeedController extends Controller {
 
 			if($i!=$totalFile){
 				$success = 0;
-				$message = "Insert Image Not Enough";
+				$message = "Thêm Không Đủ Hình Ảnh";
 			} else {
 				$success = 1;
 				$message = "Success";
@@ -151,7 +151,7 @@ class FeedController extends Controller {
 					$message = "Success";
 				} else{
 					$success = 0;
-					$message = "Video Not Found";
+					$message = "Video Không Tìm Thấy";
 				}
 			} 
 			
@@ -198,20 +198,20 @@ class FeedController extends Controller {
 		$currentFeedId = (int)$request->input('currentFeedId');
 		$limit         = $request->input('limit');
 
-		//If member not login
-		if($memberId==''){
-			$idMember = '';		
-		}else{
-			$member = Member::where('member_id',$memberId)->first();
-			if(isset($member->id)){
-				$idMember = $member->id;
-			}else{
-				$idMember = '';
-			}
-		}
+		// //If member not login
+		// if($memberId==''){
+		// 	$idMember = '';		
+		// }else{
+		// 	$member = Member::where('id',$memberId)->first();
+		// 	if(isset($member->id)){
+		// 		$idMember = $member->id;
+		// 	}else{
+		// 		$idMember = '';
+		// 	}
+		// }
 
 		//Error if end of feed
-		if($currentFeedId==Feed::all()->first()->id){
+		if($currentFeedId==Feed::orderBy('id','ASC')->first()->id){
 			$success     = 0;
 			$data        = [];
 			$afterFeedId = 0;
@@ -219,14 +219,14 @@ class FeedController extends Controller {
 
 			//currentFeedId == -1 => the first load new feed
 			if($currentFeedId == -1){
-				$current = Feed::all()->last()->id+1;
+				$current = Feed::orderBy('id','ASC')->get()->last()->id+1;
 			} else{
 				$current = $currentFeedId;
 			}
 
 			// $feeds = Feed::where('id','<', $current)->orderBy('id','DESC')->take($limit)->get();
 			$feeds = Feed::where('id','<', $current)->orderBy('id','DESC')->take($limit)->get();
-			$data = $this->getFeed($feeds, $idMember);
+			$data = $this->getListFeed($feeds, $memberId);
 
 			$success = 1;
 			$afterFeedId = (int)$feeds->last()->id;
@@ -252,16 +252,16 @@ class FeedController extends Controller {
 
 
 		//If member not login
-		if($memberId==''){
-			$idMember = '';		
-		}else{
-			$member = Member::where('member_id',$memberId)->first();
-			if(isset($member->id)){
-				$idMember = $member->id;
-			}else{
-				$idMember = '';
-			}
-		}
+		// if($memberId==''){
+		// 	$idMember = '';		
+		// }else{
+		// 	$member = Member::where('member_id',$memberId)->first();
+		// 	if(isset($member->id)){
+		// 		$idMember = $member->id;
+		// 	}else{
+		// 		$idMember = '';
+		// 	}
+		// }
 		//currentFeedId == -1 => the first load new feed
 		//currentFeedId == max feed => this is newest feed
 		//else load $limit new feed
@@ -269,22 +269,22 @@ class FeedController extends Controller {
 			// $feeds = Feed::where('id','<', $current)->orderBy('id','DESC')->take($limit)->get();
 			$feeds = Feed::orderBy('id','DESC')->take($limit)->get();
 			
-			$data = $this->getFeed($feeds, $idMember);
+			$data = $this->getListFeed($feeds, $memberId);
 
 			$success = 1;
 			$afterFeedId = (int)$feeds->first()->id;
 			$message = "Success";
-		}else if($currentFeedId==Feed::all()->last()->id){
+		}else if($currentFeedId==Feed::order('id','ASC')->last()->id){
 			$data = null;
 			$success = 1;
 			$afterFeedId = $currentFeedId;
-			$message = "This is newest Feed";
+			$message = "Feed Mới Nhất";
 		} else {
 			$feeds = Feed::where('id','>',$currentFeedId)->orderBy('id','ASC')->take($limit)->get();
 			//Sort By DESC OF ID
 			$feeds->sortByDesc('id', $options = SORT_REGULAR);
 
-			$data = $this->getFeed($feeds, $idMember);
+			$data = $this->getListFeed($feeds, $memberId);
 
 			$success = 1;
 			$afterFeedId = (int)$feeds->first()->id;
@@ -308,7 +308,7 @@ class FeedController extends Controller {
 	 * @param  Integer $idMember [Is id of member (not member_id of member)]
 	 * @return array Feed
 	 */
-	public function getFeed($feeds, $idMember){
+	public function getListFeed($feeds, $idMember){
 		$data = array();
 		foreach($feeds as $item){
 
@@ -335,7 +335,7 @@ class FeedController extends Controller {
 				$video = array();
 				$video['videoId']  = $vde->id;
 				$video['urlVideo'] = URLWEB.$vde->url_video;
-				$video['thumbnailVideoUrl'] = URLWEB.$vde->url_image_thumbnail;
+				$video['urlVideoThumbnail'] = URLWEB.$vde->url_image_thumbnail;
 				$video['type']     = $vde->type;
 			}else{
 				$video = null;
@@ -345,15 +345,15 @@ class FeedController extends Controller {
 			
 			$mem = $item->member()->first();
 			$member= array();
-			$member['memberId']   =$mem->member_id;
+			$member['memberId']   =$mem->id;
 			$member['username']   =$mem->username;
-			$member['rank']       =$mem->rank;
-			$member['like']       =$mem->like;
+			// $member['rank']       =$mem->rank;
+			// $member['like']       =$mem->like;
 			$member['avatarUrl']  =$mem->avatar_url;
-			$member['totalImage'] =$mem->total_image ;
+			// $member['totalImage'] =$mem->total_image ;
 
 
-			$isLike = MemberLikeFeed::where('member_id', $idMember)->where('feed_id',$item->id)->first();
+			$isLike = MemberLikeFeed::where('member_id', $memberId)->where('feed_id',$item->id)->first();
 			if(isset($isLike->id)){
 				$liked = $isLike->is_like;
 			}else{
@@ -367,7 +367,7 @@ class FeedController extends Controller {
 			$mdata['isLike']  = $liked;
 			$mdata['like']    = $item->like;
 			$mdata['comment'] = $item->comment;
-			$mdata['share']   = $item->share;
+			// $mdata['share']   = $item->share;
 			$mdata['school']  = $item->school;
 			$mdata['images']  = $images;
 			$mdata['video']  = $video;
@@ -401,16 +401,16 @@ class FeedController extends Controller {
 		$type       = (int)$request->input('type');
 
 		//If member not login
-		if($memberId==''){
-			$idMember = '';		
-		}else{
-			$member = Member::where('member_id',$memberId)->first();
-			if(isset($member->id)){
-				$idMember = $member->id;
-			}else{
-				$idMember = '';
-			}
-		}
+		// if($memberId==''){
+		// 	$idMember = '';		
+		// }else{
+		// 	$member = Member::where('id',$memberId)->first();
+		// 	if(isset($member->id)){
+		// 		$idMember = $member->id;
+		// 	}else{
+		// 		$idMember = '';
+		// 	}
+		// }
 		
 		//Add ids to array
 		$arr_idUsed = explode(',', $listIdUsed);
@@ -421,13 +421,13 @@ class FeedController extends Controller {
 		// Else all
 		switch($type){
 			case 0:
-				$feeds = Feed::whereNotIn('id', $arr_idUsed)->where(DB::raw('YEAR(time)'),'=',date('Y'))->where(DB::raw('WEEKOFYEAR(time)'),'=',$week-1)->orderBy('vote','DESC')->take($limit)->get(); 
+				$feeds = Feed::whereNotIn('id', $arr_idUsed)->where(DB::raw('YEAR(time)'),'=',date('Y'))->where(DB::raw('WEEKOFYEAR(time)'),'=',$week-1)->orderBy('vote','DESC')->orderBy('id','DESC')->take($limit)->get(); 
 				break;
 			case 1:
-				$feeds = Feed::whereNotIn('id', $arr_idUsed)->where(DB::raw('YEAR(time)'),'=',date('Y'))->where(DB::raw('MONTH(time)'),'=',date('m')-1)->orderBy('vote','DESC')->take($limit)->get();
+				$feeds = Feed::whereNotIn('id', $arr_idUsed)->where(DB::raw('YEAR(time)'),'=',date('Y'))->where(DB::raw('MONTH(time)'),'=',date('m')-1)->orderBy('vote','DESC')->orderBy('id','DESC')->take($limit)->get();
 				break;
 			default:
-				$feeds = Feed::whereNotIn('id', $arr_idUsed)->orderBy('vote','DESC')->take($limit)->get();
+				$feeds = Feed::whereNotIn('id', $arr_idUsed)->orderBy('vote','DESC')->orderBy('id','DESC')->take($limit)->get();
 		}
 		if(count($feeds)==0){
 			$success = 0;
@@ -435,7 +435,10 @@ class FeedController extends Controller {
 			$afterListIdUsed=0;
 		} else{
 			$afterListIdUsed = $listIdUsed;
-			$data = $this->getFeed($feeds,$idMember);
+			foreach($feeds as $item){
+				$afterListIdUsed.=', '.$item->id;
+			}
+			$data = $this->getListFeed($feeds,$memberId);
 
 			$success = 1;
 		}
@@ -489,8 +492,8 @@ class FeedController extends Controller {
 		//Get id of member has member_id = memberId
 		//If this is first time member like feed then create 1 record on table
 		//MemberLikeFeed else update is_like for record
-		$memberLike = Member::where('member_id',$memberId)->first();
-		$isLike = MemberLikeFeed::where('member_id',$memberLike->id)->where('feed_id', $feedId)->first();
+		// $memberLike = Member::where('id',$memberId)->first();
+		$isLike = MemberLikeFeed::where('member_id',$memberId)->where('feed_id', $feedId)->first();
 		
 		if(isset($isLike->id)){
 			$isLike->is_like=$type;
@@ -498,7 +501,7 @@ class FeedController extends Controller {
 		}else{
 			$isLike=new MemberLikeFeed;
 			
-			$isLike->member_id = $memberLike->id;
+			$isLike->member_id = $memberId;
 			$isLike->feed_id = $feedId;
 			$isLike->is_like = $type;
 			$isLike->save();
@@ -517,5 +520,27 @@ class FeedController extends Controller {
 	// public function testPostFeed(){
 	// 	return view('testPostFeed');
 	// }
+	// 
+	public function getFeed(Request $request){
+
+		$feedId = $request->input('feedId');
+		$memberId = $request->input('memberId');
+		// $idMember = Member::where('member_id',$memberId)->first();
+		$feed = Feed::where('id',$feedId)->get();
+		if(isset($feed->first()->id)){
+			$data = $this->getListFeed($feed, $memberId);
+			return Response::json([
+				'success'=>1,
+				'message'=>'Success',
+				'data'=>$data
+				]);
+		}else{
+			return Response::json([
+				'success'=>0,
+				'message'=>'Không Tìm Thấy Feed',
+				'data'=>null
+				]);
+		}
+	}
 
 }

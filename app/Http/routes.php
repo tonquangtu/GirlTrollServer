@@ -11,7 +11,7 @@
 |
 */
 define('URLWEB','http://girltroll.890m.com/');
-// define('URLWEB','http://192.168.1.99/GirlTroll/');
+// define('URLWEB','http://localhost/GirlTroll/');
 Route::get('/', 'WelcomeController@index');
 
 Route::get('home', 'HomeController@index');
@@ -21,15 +21,22 @@ Route::controllers([
 	'password' => 'Auth\PasswordController',
 ]);
 
-Route::post('auth/login',['as'=>'postLogin','uses'=>'Auth\AuthController@postLogin']);
+//Route::post('auth/login',['as'=>'postLogin','uses'=>'Auth\AuthController@postLogin']);
 
 Route::get('member',['as'=>'getListMember', 'uses'=>'WelcomeController@getListMember']);
 
-
 /**
- * Save account if not exist
+ * Sign up one account
  */
-Route::resource('login','LoginController',['only'=>'store']);
+Route::post('signup','LoginController@signup');
+/**
+ * Login with account normal
+ */
+Route::post('login/normal','LoginController@loginNormal');
+/**
+ * Save account if not exist, login with facebook
+ */
+Route::resource('login/facebook','LoginController',['only'=>'store']);
 
 /**
  * Get new feed
@@ -76,15 +83,21 @@ Route::get('feed/comment/delete',['as'=>'deleteComment', 'uses'=>'CommentControl
  */
 Route::post('feed/comment/like',['as'=>'likeComment', 'uses'=>'CommentController@likeComment']);
 
+
+Route::get('feed/get',['as'=>'getFeed','uses'=>'FeedController@getFeed']);
 /**
  * Save a new feed
  */
 Route::resource('feed','FeedController',['only'=>'store']);
 
+Route::resource('coverimage','CoverImageController',['except'=>'store']);
+
+Route::post('coverimage/store','CoverImageController@storeImage');
 /**
  * Get list Cover Image for Service
  */
-Route::post('coverimage',['as'=>'postCoverImage','uses'=>'CoverImageController@getCoverImage']);
+Route::post('coverimage',['as'=>'postCoverImage','uses'=>'CoverImageController@getListCoverImage']);
+
 
 /**
  * Save a userevent when use complete event

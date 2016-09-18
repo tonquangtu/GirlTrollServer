@@ -15,17 +15,24 @@ class CoverImageController extends Controller {
 	 * Get List Cover Image
 	 * @return Response
 	 */
-	public function getCoverImage(Request $request){
+	public function getListCoverImage(Request $request){
 		// Get data from client
 		$listIdUsed = $request->input('listIdUsed');
 		$limit      = $request->input('limit');
+		$order = $request->input('order');
+
 
 		//Add ids to array
 		$arr_idUsed = explode(',', $listIdUsed);
 
 		// print_r($arr_idUsed);die;
 		// Get list image cover order by number cover and not used
-		$imagecover = ImageCover::whereNotIn('id', $arr_idUsed)->orderBy('number_cover','DESC')->take($limit)->get();
+		// If has order eg id,.. else orderBy(number_cover)
+		if(isset($order)){
+			$imagecover = ImageCover::whereNotIn('id', $arr_idUsed)->orderBy($order,'DESC')->take($limit)->get();
+		}else{
+			$imagecover = ImageCover::whereNotIn('id', $arr_idUsed)->orderBy('number_cover','DESC')->take($limit)->get();
+		}
 		if(count($imagecover)==0){
 			$success = 0;
 			$data = [];
@@ -59,12 +66,13 @@ class CoverImageController extends Controller {
 		return Response::json($send);
 	}
 
+
 	/**
 	 * Store a newly created resource in storage.
 	 *
 	 * @return Response
 	 */
-	public function store(Request $request)
+	public function storeImage(Request $request)
 	{
 		$coverimage = new ImageCover;
 		$coverimage->title=$request->input('title');
@@ -79,9 +87,15 @@ class CoverImageController extends Controller {
 			$coverimage->url_image = $pathImg.'/'.$filename;
 			$coverimage->url_image_thumbnail = $pathThumb.'/'.$filename;
 			$coverimage->save();
-			return redirect()->route('getListCoverImage')->with(['flash_level'=>'success','flash_message'=>'Add new success']);
+			return Response::json([
+					'success'=>1,
+					'message'=>'Success'
+				]);
 		} else{
-			return redirect()->route('getAddCoverImage')->with(['flash_level'=>'danger','flash_message'=>'Not found Image']);
+			return Response::json([
+					'success'=>0,
+					'message'=>'Can\'t add cover image'
+				]);
 		}
 	}
 
@@ -94,11 +108,19 @@ class CoverImageController extends Controller {
 	public function show($id)
 	{
 		$coverimage = ImageCover::find($id);
+
 		if(isset($coverimage->id)){
+			$image = [
+					'imageId'=> $coverimage->id,
+					'title' => $coverimage->title,
+					'urlImage' => URLWEB.$coverimage->url_image,
+					'urlImageThumbnail'=>URLWEB.$coverimage->url_image_thumbnail,
+					'numberCover' => $coverimage->number_cover
+				];
 			return Response::json([
 				'success'=>1,
 				'message'=>'Success',
-				'data'=>$coverimage
+				'data'=>$image
 				]);
 		}
 		return Response::json([

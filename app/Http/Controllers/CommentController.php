@@ -25,18 +25,18 @@ class CommentController extends Controller {
 				'message'=>'Not login'
 			]);
 		}else{
-			$member = Member::where('member_id',$memberId)->first();
-			if(isset($member->id)){
-				$idMember = $member->id;
-			}else{
-				return Response::json([
-					'success'=>0,
-					'message'=>'This is not member of girltroll'
-				]);
-			}
+			// $member = Member::where('member_id',$memberId)->first();
+			// if(isset($member->id)){
+			// 	$idMember = $member->id;
+			// }else{
+			// 	return Response::json([
+			// 		'success'=>0,
+			// 		'message'=>'This is not member of girltroll'
+			// 	]);
+			// }
 			// Add comment of member in table Comment
 			$object = new Comment;
-			$object->member_id = $idMember;
+			$object->member_id = $memberId;
 			$object->feed_id = $feedId;
 			$object->comment = $comment;
 			$object->save();
@@ -55,16 +55,16 @@ class CommentController extends Controller {
 		$limit = $request->input('limit');
 
 		//If member not login
-		if($memberId==''){
-			$idMember = '';
-		}else{
-			$member = Member::where('member_id',$memberId)->first();
-			if(isset($member->id)){
-				$idMember = $member->id;
-			}else{
-				$idMember = '';
-			}
-		}
+		// if($memberId==''){
+		// 	$idMember = '';
+		// }else{
+		// 	$member = Member::where('member_id',$memberId)->first();
+		// 	if(isset($member->id)){
+		// 		$idMember = $member->id;
+		// 	}else{
+		// 		$idMember = '';
+		// 	}
+		// }
 		//If not comment of feed
 		if(count(Comment::where('feed_id',$feedId)->get())==0){
 			$success     = 0;
@@ -73,7 +73,7 @@ class CommentController extends Controller {
 		}
 
 		//Error if end of comment of feed
-		elseif($currentCommentId==Comment::where('feed_id',$feedId)->first()->id){
+		elseif($currentCommentId==Comment::where('feed_id',$feedId)->orderBy('id','ASC')->first()->id){
 			$success     = 0;
 			$data        = [];
 			$afterCommentId = 0;
@@ -81,13 +81,13 @@ class CommentController extends Controller {
 
 			//currentCommentId == -1 => the first load comment of feed
 			if($currentCommentId == -1){
-				$current = Comment::where('feed_id',$feedId)->get()->last()->id+1;
+				$current = Comment::where('feed_id',$feedId)->orderBy('id','ASC')->get()->last()->id+1;
 			} else{
 				$current = $currentCommentId;
 			}
 
 			$comments = Comment::where('feed_id',$feedId)->where('id','<', $current)->orderBy('id','DESC')->take($limit)->get();
-			$data = $this->getComment($comments, $idMember);
+			$data = $this->getComment($comments, $memberId);
 
 			$success = 1;
 			$afterCommentId = (int)$comments->last()->id;
@@ -113,16 +113,16 @@ class CommentController extends Controller {
 
 
 		//If member not login
-		if($memberId==''){
-			$idMember = '';		
-		}else{
-			$member = Member::where('member_id',$memberId)->first();
-			if(isset($member->id)){
-				$idMember = $member->id;
-			}else{
-				$idMember = '';
-			}
-		}
+		// if($memberId==''){
+		// 	$idMember = '';		
+		// }else{
+		// 	$member = Member::where('member_id',$memberId)->first();
+		// 	if(isset($member->id)){
+		// 		$idMember = $member->id;
+		// 	}else{
+		// 		$idMember = '';
+		// 	}
+		// }
 
 		//If not comment of feed
 		if(count(Comment::where('feed_id',$feedId)->get())==0){
@@ -137,12 +137,12 @@ class CommentController extends Controller {
 		elseif($currentCommentId == -1){
 			$comment = Comment::where('feed_id',$feedId)->orderBy('id','DESC')->take($limit)->get();
 			
-			$data = $this->getComment($comment, $idMember);
+			$data = $this->getComment($comment, $memberId);
 
 			$success = 1;
 			$afterCommentId = (int)$comment->first()->id;
 			$message = "Success";
-		}elseif($currentCommentId==Comment::where('feed_id', $feedId)->get()->last()->id){
+		}elseif($currentCommentId==Comment::where('feed_id', $feedId)->orderBy('id','ASC')->get()->last()->id){
 			$data = null;
 			$success = 1;
 			$afterCommentId = $currentCommentId;
@@ -152,7 +152,7 @@ class CommentController extends Controller {
 			//Sort By DESC OF ID
 			$comment->sortByDesc('id', $options = SORT_REGULAR);
 
-			$data = $this->getComment($comment, $idMember);
+			$data = $this->getComment($comment, $memberId);
 
 			$success = 1;
 			$afterFeedId = (int)$comment->first()->id;
@@ -185,13 +185,13 @@ class CommentController extends Controller {
 			$member= array();
 			$member['memberId']   =$mem->member_id;
 			$member['username']   =$mem->username;
-			$member['rank']       =$mem->rank;
+			// $member['rank']       =$mem->rank;
 			$member['like']       =$mem->like;
 			$member['avatarUrl']  =$mem->avatar_url;
 			$member['totalImage'] =$mem->total_image ;
 
 
-			$isLike = MemberLikeComment::where('member_id', $idMember)->where('comment_id',$item->id)->first();
+			$isLike = MemberLikeComment::where('member_id', $memberId)->where('comment_id',$item->id)->first();
 			if(isset($isLike->id)){
 				$liked = $isLike->is_like;
 			}else{
@@ -229,17 +229,17 @@ class CommentController extends Controller {
 				'message'=>'Not login'
 			]);
 		}else{
-			$member = Member::where('member_id',$memberId)->first();
+			// $member = Member::where('member_id',$memberId)->first();
 			
-			if(isset($member->id)){
-				$idMember = $member->id;
-			}else{
-				return Response::json([
-					'success'=>0,
-					'message'=>'This is not member of girltroll'
-				]);
-			}
-			$object = Comment::where('id',$commentId)->where('member_id',$idMember)->where('feed_id',$feedId)->first();
+			// if(isset($member->id)){
+			// 	$idMember = $member->id;
+			// }else{
+			// 	return Response::json([
+			// 		'success'=>0,
+			// 		'message'=>'This is not member of girltroll'
+			// 	]);
+			// }
+			$object = Comment::where('id',$commentId)->where('member_id',$memberId)->where('feed_id',$feedId)->first();
 			
 			// If this comment is not of member
 			if(isset($object->id)){
@@ -291,8 +291,8 @@ class CommentController extends Controller {
 		//Get id of member has member_id = memberId
 		//If this is first time member like feed then create 1 record on table
 		//MemberLikeFeed else update is_like for record
-		$memberLike = Member::where('member_id',$memberId)->first();
-		$isLike = MemberLikeComment::where('member_id',$memberLike->id)->where('comment_id', $commentId)->first();
+		// $memberLike = Member::where('id',$memberId)->first();
+		$isLike = MemberLikeComment::where('member_id',$memberId)->where('comment_id', $commentId)->first();
 		
 		if(isset($isLike->id)){
 			$isLike->is_like=$type;
@@ -300,7 +300,7 @@ class CommentController extends Controller {
 		}else{
 			$isLike=new MemberLikeComment;
 			
-			$isLike->member_id = $memberLike->id;
+			$isLike->member_id = $memberId;
 			$isLike->comment_id = $feedId;
 			$isLike->is_like = $type;
 			$isLike->save();

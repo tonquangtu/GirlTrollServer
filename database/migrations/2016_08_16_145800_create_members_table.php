@@ -15,9 +15,10 @@ class CreateMembersTable extends Migration {
 		Schema::create('member', function(Blueprint $table)
 		{
 			$table->increments('id');
-			$table->string('member_id')->length(100);
+			$table->string('facebook_id')->length(100)->nullable();
 			$table->string('username')->length(255);
-			$table->integer('rank')->length(11);
+			$table->integer('gmail')->length(11)->nullable();
+			$table->string('password')->nullable();
 			$table->bigInteger('like')->length(16);
 			$table->string('avatar_url')->length(255);
 			$table->integer('total_image')->length(11);
