@@ -485,6 +485,7 @@ class FeedController extends Controller {
 				$feed->like--;
 				$member->like--;
 			}
+			$feed->vote = $feed->like*0.5+$feed->comment*0.5;
 			$feed->save();
 			$member->save();
 		}

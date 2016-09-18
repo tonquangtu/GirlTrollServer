@@ -40,6 +40,10 @@ class CommentController extends Controller {
 			$object->feed_id = $feedId;
 			$object->comment = $comment;
 			$object->save();
+			$feed = Feed::find($feedId);
+			$feed->comment++;
+			$feed->vote = $feed->like*0.5 + $feed->comment*0.5;
+			$feed->save();
 			return Response::json([
 				'success'=>1,
 				'message'=>'Success'
