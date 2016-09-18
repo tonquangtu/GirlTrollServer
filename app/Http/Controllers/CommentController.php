@@ -181,13 +181,13 @@ class CommentController extends Controller {
 	 * @param  [type] $idMember [description]
 	 * @return [type]           [description]
 	 */
-	public function getComment($comments, $idMember){
+	public function getComment($comments, $memberId){
 		$data = array();
 		foreach($comments as $item){
 
 			$mem = $item->member()->first();
 			$member= array();
-			$member['memberId']   =$mem->member_id;
+			$member['memberId']   =$mem->id;
 			$member['username']   =$mem->username;
 			// $member['rank']       =$mem->rank;
 			$member['like']       =$mem->like;

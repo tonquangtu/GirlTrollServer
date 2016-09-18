@@ -274,7 +274,7 @@ class FeedController extends Controller {
 			$success = 1;
 			$afterFeedId = (int)$feeds->first()->id;
 			$message = "Success";
-		}else if($currentFeedId==Feed::order('id','ASC')->last()->id){
+		}else if($currentFeedId==Feed::orderBy('id','ASC')->get()->last()->id){
 			$data = null;
 			$success = 1;
 			$afterFeedId = $currentFeedId;
@@ -308,7 +308,7 @@ class FeedController extends Controller {
 	 * @param  Integer $idMember [Is id of member (not member_id of member)]
 	 * @return array Feed
 	 */
-	public function getListFeed($feeds, $idMember){
+	public function getListFeed($feeds, $memberId){
 		$data = array();
 		foreach($feeds as $item){
 
