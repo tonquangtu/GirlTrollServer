@@ -112,15 +112,29 @@ class FeedController extends Controller {
 
 			//0: file, 1: youtube
 			if($typeVideo == 1){
-				$vde = new Video;
-				$vde->url_video = $request->input('youtube');
-				$vde->url_image_thumbnail = '';
-				$vde->type = $typeVideo;
-				$vde->feed_id = $feed->id;
-				$vde->save();
+				//Check link youtube
+				$youtube = $request->input('youtube');
+				if(strpos($youtube,'youtube.com/watch?v=')>0){
+		        	$youtube_id = str_replace('https://www.youtube.com/watch?v=','',$youtube);
+		        	$thumbnailVideo = 'http://img.youtube.com/vi/'.$youtube_id.'/0.jpg';
+		        	$vde = new Video;
+					$vde->url_video = $youtube;
+					$vde->url_image_thumbnail = $thumbnailVideo;
+					$vde->type = $typeVideo;
+					$vde->feed_id = $feed->id;
+					$vde->save();
 
-				$success = 1;
-				$message = "Success";
+					$success = 1;
+					$message = "Success";
+		        } else{
+		        	$feed->delete();
+		        	return Response::json([
+						'success'=>0,
+						'message'=>"Không phải link youtube"
+					]);
+		        }
+				// $thumbnailname = $request->input('thumbnailVideo');
+				
 			} else{
 				if($request->hasFile('file')){
 
@@ -331,11 +345,19 @@ class FeedController extends Controller {
 
 			$vde = $item->video()->first();
 			$video = array();
+
 			if(isset($vde->id)){
+
+				//If video from youtube urlthumbnail is urlthumbnail of youtube video
+				if($vde->type==1){
+					$urlVideoThumbnail1 = $vde->url_image_thumbnail;
+				}else{
+					$urlVideoThumbnail1 = URLWEB.$vde->url_image_thumbnail;
+				}
 				$video = array();
 				$video['videoId']  = $vde->id;
 				$video['urlVideo'] = URLWEB.$vde->url_video;
-				$video['urlVideoThumbnail'] = URLWEB.$vde->url_image_thumbnail;
+				$video['urlVideoThumbnail'] = $urlVideoThumbnail1;
 				$video['type']     = $vde->type;
 			}else{
 				$video = null;

@@ -10,8 +10,8 @@
 | and give it the controller to call when that URI is requested.
 |
 */
-define('URLWEB','http://girltroll.890m.com/');
-// define('URLWEB','http://localhost/GirlTroll/');
+// define('URLWEB','http://girltroll.890m.com/');
+define('URLWEB','http://localhost/GirlTroll/');
 Route::get('/', 'WelcomeController@index');
 
 Route::get('home', 'HomeController@index');
