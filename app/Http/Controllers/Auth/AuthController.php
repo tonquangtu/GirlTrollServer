@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\Registrar;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
+use App\Member;
 
 class AuthController extends Controller {
 
@@ -47,6 +48,26 @@ class AuthController extends Controller {
 			return redirect('home');
 		} else {
 			return redirect('auth/login')->with(['flash_level'=>'danger','flash_message'=>'Tài khoản hoặc mật khẩu không đúng!']);
+		}
+	}
+
+
+	/**
+	 * Active account
+	 * @param  Request $request [description]
+	 * @return [type]           [description]
+	 */
+	public function active(Request $request){
+		$gmail = $request->input('gmail');
+		$password = $request->input('password');
+		$member = Member::where('gmail',$gmail)->first();
+		if(isset($member->id)){
+			if(crypt($password, $member->password)==$member->password){
+				$member->active = 1;
+				$member->save();
+				return view('success');
+
+			}
 		}
 	}
 

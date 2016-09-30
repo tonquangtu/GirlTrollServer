@@ -351,12 +351,14 @@ class FeedController extends Controller {
 				//If video from youtube urlthumbnail is urlthumbnail of youtube video
 				if($vde->type==1){
 					$urlVideoThumbnail1 = $vde->url_image_thumbnail;
+					$urlVideo1=$vde->url_video;
 				}else{
 					$urlVideoThumbnail1 = URLWEB.$vde->url_image_thumbnail;
+					$urlVideo1 = URLWEB.$vde->url_video;
 				}
 				$video = array();
 				$video['videoId']  = $vde->id;
-				$video['urlVideo'] = URLWEB.$vde->url_video;
+				$video['urlVideo'] = $urlVideo1;
 				$video['urlVideoThumbnail'] = $urlVideoThumbnail1;
 				$video['type']     = $vde->type;
 			}else{
@@ -537,13 +539,9 @@ class FeedController extends Controller {
 	}
 
 	/**
-	 * Test Post Feed
+	 * Get feed by feedId
 	 * @return [type] [description]
 	 */
-	// public function testPostFeed(){
-	// 	return view('testPostFeed');
-	// }
-	// 
 	public function getFeed(Request $request){
 
 		$feedId = $request->input('feedId');
@@ -566,4 +564,30 @@ class FeedController extends Controller {
 		}
 	}
 
+	/**
+	 * Get all feed of member
+	 * @param  Request $request [description]
+	 * @return [type]           [description]
+	 */
+	public function getFeedOfMember(Request $request){
+
+		$feedId = $request->input('feedId');
+		$memberId = $request->input('memberId');
+		// $idMember = Member::where('member_id',$memberId)->first();
+		$feed = Feed::where('id',$feedId)->get();
+		if(isset($feed->first()->id)){
+			$data = $this->getListFeed($feed, $memberId);
+			return Response::json([
+				'success'=>1,
+				'message'=>'Success',
+				'data'=>$data
+				]);
+		}else{
+			return Response::json([
+				'success'=>0,
+				'message'=>'Không Tìm Thấy Feed',
+				'data'=>null
+				]);
+		}
+	}
 }

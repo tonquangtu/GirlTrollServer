@@ -83,6 +83,11 @@ class EventController extends Controller {
 			'success' => $success,
 			'message' => ($success == 0) ? 'Not found event' : 'Detail information of event',
 			'event' => [
+				'title'=>$event->title,
+				'timeEvent' => [
+					'timeStart' => $event->time_start,
+					'timeEnd' => $event->time_end
+				],
 				'shortContent' => $event->short_content,
 				'content' => $event->content,
 				'images' => $img,

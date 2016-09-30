@@ -1,1 +1,1 @@
-Click here to reset your password: {{ url('password/reset/'.$token) }}
+Bạn hãy click vào đường dẫn sau để khôi phục password: {{ url('password/reset/'.$token) }}

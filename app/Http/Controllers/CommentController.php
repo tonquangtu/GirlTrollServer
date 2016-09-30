@@ -11,6 +11,11 @@ use App\MemberLikeComment;
 
 class CommentController extends Controller {
 
+	/**
+	 * Post Comment
+	 * @pẩm  Request $request [description]
+	 * @return [type]           [description]
+	 */
 	public function postComment(Request $request){
 		
 		// Get data send by client
@@ -25,15 +30,7 @@ class CommentController extends Controller {
 				'message'=>'Not login'
 			]);
 		}else{
-			// $member = Member::where('member_id',$memberId)->first();
-			// if(isset($member->id)){
-			// 	$idMember = $member->id;
-			// }else{
-			// 	return Response::json([
-			// 		'success'=>0,
-			// 		'message'=>'This is not member of girltroll'
-			// 	]);
-			// }
+			
 			// Add comment of member in table Comment
 			$object = new Comment;
 			$object->member_id = $memberId;
@@ -51,6 +48,11 @@ class CommentController extends Controller {
 		}
 	}
 
+	/**
+	 * Load Comment with limit
+	 * @param  Request $request [description]
+	 * @return [type]           [description]
+	 */
 	public function loadComment(Request $request){
 		//Get data send by client
 		$memberId = $request->input('memberId');
@@ -58,17 +60,7 @@ class CommentController extends Controller {
 		$currentCommentId = $request->input('currentCommentId');
 		$limit = $request->input('limit');
 
-		//If member not login
-		// if($memberId==''){
-		// 	$idMember = '';
-		// }else{
-		// 	$member = Member::where('member_id',$memberId)->first();
-		// 	if(isset($member->id)){
-		// 		$idMember = $member->id;
-		// 	}else{
-		// 		$idMember = '';
-		// 	}
-		// }
+		
 		//If not comment of feed
 		if(count(Comment::where('feed_id',$feedId)->get())==0){
 			$success     = 0;
@@ -108,6 +100,11 @@ class CommentController extends Controller {
 		return Response::json($send);
 	}
 
+	/**
+	 * Load Refresh Comment
+	 * @param  Request $request [description]
+	 * @return [type]           [description]
+	 */
 	public function refreshComment(Request $request){
 		//Get data send by client
 		$memberId = $request->input('memberId');
@@ -116,18 +113,7 @@ class CommentController extends Controller {
 		$limit = $request->input('limit');
 
 
-		//If member not login
-		// if($memberId==''){
-		// 	$idMember = '';		
-		// }else{
-		// 	$member = Member::where('member_id',$memberId)->first();
-		// 	if(isset($member->id)){
-		// 		$idMember = $member->id;
-		// 	}else{
-		// 		$idMember = '';
-		// 	}
-		// }
-
+		
 		//If not comment of feed
 		if(count(Comment::where('feed_id',$feedId)->get())==0){
 			$success     = 0;
@@ -194,7 +180,7 @@ class CommentController extends Controller {
 			$member['avatarUrl']  =$mem->avatar_url;
 			$member['totalImage'] =$mem->total_image ;
 
-
+			//Set liked
 			$isLike = MemberLikeComment::where('member_id', $memberId)->where('comment_id',$item->id)->first();
 			if(isset($isLike->id)){
 				$liked = $isLike->is_like;

@@ -14,7 +14,7 @@ class Member extends Model {
 	 * Attribute to show
 	 * @var array
 	 */
-	protected $fillable=['id','facebook_id', 'username','gmail','password','like','avatar_url','total_image'];
+	protected $fillable=['id','facebook_id', 'username','gmail','password','like','avatar_url','total_image','active'];
 
 	public $timestamps = false;
 	public function feed(){

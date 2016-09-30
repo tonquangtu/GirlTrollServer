@@ -12,6 +12,8 @@
 */
 // define('URLWEB','http://girltroll.890m.com/');
 define('URLWEB','http://localhost/GirlTroll/');
+define('URLWEB_CLIENT','http://localhost/GirlTrollWeb/');
+// define('URLWEB_CLIENT','http://girltrollsv.ga');
 Route::get('/', 'WelcomeController@index');
 
 Route::get('home', 'HomeController@index');
@@ -29,6 +31,12 @@ Route::get('member',['as'=>'getListMember', 'uses'=>'WelcomeController@getListMe
  * Sign up one account
  */
 Route::post('signup','LoginController@signup');
+
+/**
+ * Active account
+ */
+Route::get('active','Auth\AuthController@active');
+
 /**
  * Login with account normal
  */

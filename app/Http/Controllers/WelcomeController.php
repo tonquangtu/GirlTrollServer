@@ -57,23 +57,57 @@ class WelcomeController extends Controller {
 		// return view('customer.index',compact('feeds'));
 	}
 
+	/**
+	 * Get List Member
+	 * @param  Request $request [description]
+	 * @return [type]           [description]
+	 */
 	public function getListMember(Request $request){
 		$limit = (int)$request->input('limit');
-		if($limit!=0){
-			$members = Member::orderBy('like','DESC')->take($limit)->get();
-		}else{
-			$members = Member::all();
+		$order = (int)$request->input('order');
+
+		// $limit <=0: get all
+		// $order = 1: order by asc of id
+		// $order = 2: order by desc of id
+		// $order = 3: order by desc of like
+		if($limit<=0){
+			switch($order){
+				
+				case 1:
+					$members = Member::orderBy('id','DESC')->get();
+					break;
+				case 2:
+					$members = Member::orderBy('like','DESC')->get();
+					break;
+				default:
+					$members = Member::orderBy('id','ASC')->get();
+					break;
+			}
+		} else{
+			switch($order){
+				
+				case 1:
+					$members = Member::orderBy('id','DESC')->take($limit)->get();
+					break;
+				case 2:
+					$members = Member::orderBy('like','DESC')->take($limit)->get();
+					break;
+				default:
+					$members = Member::orderBy('id','ASC')->take($limit)->get();
+					break;
+			}
 		}
 		$data = array();
 		foreach($members as $item){
 			$member= array();
-			$member['id']         =$item->id;
-			$member['memberId']   =$item->member_id;
+			$member['memberId']   =$item->id;
+			$member['facebookId']   =$item->facebook_id;
 			$member['username']   =$item->username;
-			$member['rank']       =$item->rank;
+			$member['gmail']   =$item->gmail;
 			$member['like']       =$item->like;
 			$member['avatarUrl']  =$item->avatar_url;
 			$member['totalImage'] =$item->total_image ;
+			$member['active'] =$item->active ;
 			$data[] = $member;
 		}
 		return Response::json([
@@ -82,5 +116,6 @@ class WelcomeController extends Controller {
 			'data'=>$data
 		]);
 	}
+
 
 }
