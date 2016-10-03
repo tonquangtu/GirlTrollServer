@@ -27,7 +27,8 @@ class CommentController extends Controller {
 		if($memberId==''){
 			return Response::json([
 				'success'=>0,
-				'message'=>'Not login'
+				'message'=>'Not login',
+				'data'=>null
 			]);
 		}else{
 			
@@ -36,14 +37,29 @@ class CommentController extends Controller {
 			$object->member_id = $memberId;
 			$object->feed_id = $feedId;
 			$object->comment = $comment;
+			$object->num_like = 0;
+			$object->time = date('Y-m-d H:i:s');
 			$object->save();
-			$feed = Feed::find($feedId);
+			$feed = $object->feed()->first();
 			$feed->comment++;
 			$feed->vote = $feed->like*0.5 + $feed->comment*0.5;
 			$feed->save();
+			$member = $object->member()->first();
 			return Response::json([
 				'success'=>1,
-				'message'=>'Success'
+				'message'=>'Success',
+				'data'=>[
+					'commentId'=>$object->id,
+					'comment' => $comment,
+					'numLike' => 0,
+					'isLike' => 0,
+					'time' => $object->time,
+					'member'=>[
+						'memberId'=>$memberId,
+						'username'=>$member->username,
+						'avatarUrl'=>$member->facebook_id==''?URLWEB.$member->avatar_url:$member->avatar_url
+					]
+				]
 			]);
 		}
 	}
@@ -177,7 +193,7 @@ class CommentController extends Controller {
 			$member['username']   =$mem->username;
 			// $member['rank']       =$mem->rank;
 			$member['like']       =$mem->like;
-			$member['avatarUrl']  =$mem->avatar_url;
+			$member['avatarUrl']  =$mem->facebook_id==''?URLWEB.$mem->avatar_url:$mem->avatar_url;
 			$member['totalImage'] =$mem->total_image ;
 
 			//Set liked
@@ -191,6 +207,7 @@ class CommentController extends Controller {
 			$mdata = array();
 			$mdata['commentId']  = $item->id;
 			$mdata['numLike']   = $item->num_like;
+			$mdata['comment'] = $item->comment;
 			$mdata['isLike']  = $liked;
 			$mdata['time']    = $item->time;
 			$mdata['member']  = $member;
@@ -216,7 +233,7 @@ class CommentController extends Controller {
 		if($memberId==''){
 			return Response::json([
 				'success'=>0,
-				'message'=>'Not login'
+				'message'=>'Bạn chưa đăng nhập'
 			]);
 		}else{
 			// $member = Member::where('member_id',$memberId)->first();
@@ -233,7 +250,11 @@ class CommentController extends Controller {
 			
 			// If this comment is not of member
 			if(isset($object->id)){
+				$feed = $object->feed()->first();
+				$feed->comment--;
+				$feed->save();
 				$object->delete();
+
 				return Response::json([
 					'success'=>1,
 					'message'=>'Success'
@@ -241,7 +262,7 @@ class CommentController extends Controller {
 			}else{
 				return Response::json([
 					'success'=>0,
-					'message'=>'You can\' delete this comment'
+					'message'=>'Không thể xóa comment'
 				]);
 			}
 		}
@@ -262,7 +283,7 @@ class CommentController extends Controller {
 		if($memberId==''){
 			return Response::json([
 			'success' => 0,
-			'message' =>'Not login'
+			'message' =>'Bạn chưa đăng nhập'
 			]);
 		}
 
@@ -291,7 +312,7 @@ class CommentController extends Controller {
 			$isLike=new MemberLikeComment;
 			
 			$isLike->member_id = $memberId;
-			$isLike->comment_id = $feedId;
+			$isLike->comment_id = $commentId;
 			$isLike->is_like = $type;
 			$isLike->save();
 		}

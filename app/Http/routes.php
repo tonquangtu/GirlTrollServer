@@ -35,7 +35,7 @@ Route::post('signup','LoginController@signup');
 /**
  * Active account
  */
-Route::get('active','Auth\AuthController@active');
+Route::post('active','Auth\AuthController@active');
 
 /**
  * Login with account normal
@@ -84,7 +84,7 @@ Route::get('feed/comment/refresh',['as'=>'refreshComment', 'uses'=>'CommentContr
 /**
  * Delete Comment
  */
-Route::get('feed/comment/delete',['as'=>'deleteComment', 'uses'=>'CommentController@deleteComment']);
+Route::post('feed/comment/delete',['as'=>'deleteComment', 'uses'=>'CommentController@deleteComment']);
 
 /**
  * Like Comment

@@ -18,32 +18,94 @@ class EventController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function index()
+	public function index(Request $request)
 	{
-		$listEvent = Event::where('active', '=', 1)->where(DB::raw('time_end'),'>',date('Y-m-d H:i:s'))->orderBy('time_end', 'DESC')->get();
-		if (count($listEvent) == 0) {
-			$success = 0;
-			$data = [];
-		} else {
-			$success = 1;
-			$data = array();
-			foreach ($listEvent as $event) {
-				$data[] = [
-					'eventId' => $event->id,
-					'title' => $event->title,
-					'timeEvent' => [
-						'timeStart' => $event->time_start,
-						'timeEnd' => $event->time_end
-					]
-				];
+		$id = (int)$request->input('eventId');
+		if($id==0){
+			$listEvent = Event::where('active', '=', 1)->where(DB::raw('time_end'),'>',date('Y-m-d H:i:s'))->orderBy('time_end', 'DESC')->get();
+			if (count($listEvent) == 0) {
+				$success = 0;
+				$data = [];
+			} else {
+				$success = 1;
+				$data = array();
+				foreach ($listEvent as $event) {
+					$data[] = [
+						'eventId' => $event->id,
+						'title' => $event->title,
+						'timeEvent' => [
+							'timeStart' => $event->time_start,
+							'timeEnd' => $event->time_end
+						]
+					];
+				}
 			}
+			$send = [
+				'success' => $success,
+				'message' => ($success == 0) ? 'Not found event' : 'List of events',
+				'data' => $data
+			];
+			return Response::json($send);
+		}else{
+			
+
+			$event = Event::find($id);
+			$img = array();
+			if (!isset($event->id)) {
+				$success = 0;
+				$message = "Không tìm thấy sự kiện";
+				$event = null;
+			} else {
+
+				$imageevents = ImageEvent::where('event_id','=',$event->id)->get();
+				if(count($imageevents)==0){
+					$success = 0;
+					$message = "Không có ảnh";
+					$event = null;
+				}else{
+					
+					$userEvent = UserEvent::where('event_id', '=', $id) ->where('member_id', '=', $request->memberId)->first();
+					if (count($userEvent) == 1) {
+						$success = 0;
+						$message = "Đã tham gia sự kiện";
+					}else{
+						$success = 1;
+						$message = "Success";
+					}
+					foreach($imageevents as $item){
+						$image = $item->image()->first();
+						$img[] = [
+							'feedId' => $image->feed_id,
+							'imageId' => $image->id,
+							'urlImage' => URLWEB.$image->url_image,
+							'type' => $image->type,
+							'linkFace' => $image->link_face,
+							'urlImageThumbnail' => URLWEB.$image->url_image_thumbnail
+						];
+					}
+					$event = [
+						'title'=>$event->title,
+						'timeEvent' => [
+							'timeStart' => $event->time_start,
+							'timeEnd' => $event->time_end
+						],
+						'shortContent' => $event->short_content,
+						'content' => $event->content,
+						'images' => $img,
+						'type' => $event->type,
+						'policy' => $event->policy,
+						'active' => $event->active
+					];
+				}
+			}
+			$send = [
+				'success' => $success,
+				'message' => $message,
+				'event' => $event
+			];
+			return Response::json($send);
 		}
-		$send = [
-			'success' => $success,
-			'message' => ($success == 0) ? 'Not found event' : 'List of events',
-			'data' => $data
-		];
-		return Response::json($send);
+		
 	}
 
 	/**
@@ -52,52 +114,52 @@ class EventController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function show($id)
-	{
-		$event = Event::find($id);
-		$img = array();
-		if (!isset($event->id)) {
-			$success = 0;
-			$img = null;
-		} else {
+	// public function show($id)
+	// {
+	// 	$event = Event::find($id);
+	// 	$img = array();
+	// 	if (!isset($event->id)) {
+	// 		$success = 0;
+	// 		$img = null;
+	// 	} else {
 			
-			$success = 1;
-			$imageevents = ImageEvent::where('event_id','=',$event->id)->get();
-			if(count($imageevents)==0){
-				$success = 0;
-				$img = null;
-			}
-			foreach($imageevents as $item){
-				$image = $item->image()->first();
-				$img[] = [
-					'feedId' => $image->feed_id,
-					'imageId' => $image->id,
-					'urlImage' => URLWEB.$image->url_image,
-					'type' => $image->type,
-					'linkFace' => $image->link_face,
-					'urlImageThumbnail' => URLWEB.$image->url_image_thumbnail
-				];
-			}
-		}
-		$send = [
-			'success' => $success,
-			'message' => ($success == 0) ? 'Not found event' : 'Detail information of event',
-			'event' => [
-				'title'=>$event->title,
-				'timeEvent' => [
-					'timeStart' => $event->time_start,
-					'timeEnd' => $event->time_end
-				],
-				'shortContent' => $event->short_content,
-				'content' => $event->content,
-				'images' => $img,
-				'type' => $event->type,
-				'policy' => $event->policy,
-				'active' => $event->active
-			]
-		];
-		return Response::json($send);
-	}
+	// 		$success = 1;
+	// 		$imageevents = ImageEvent::where('event_id','=',$event->id)->get();
+	// 		if(count($imageevents)==0){
+	// 			$success = 0;
+	// 			$img = null;
+	// 		}
+	// 		foreach($imageevents as $item){
+	// 			$image = $item->image()->first();
+	// 			$img[] = [
+	// 				'feedId' => $image->feed_id,
+	// 				'imageId' => $image->id,
+	// 				'urlImage' => URLWEB.$image->url_image,
+	// 				'type' => $image->type,
+	// 				'linkFace' => $image->link_face,
+	// 				'urlImageThumbnail' => URLWEB.$image->url_image_thumbnail
+	// 			];
+	// 		}
+	// 	}
+	// 	$send = [
+	// 		'success' => $success,
+	// 		'message' => ($success == 0) ? 'Not found event' : 'Detail information of event',
+	// 		'event' => [
+	// 			'title'=>$event->title,
+	// 			'timeEvent' => [
+	// 				'timeStart' => $event->time_start,
+	// 				'timeEnd' => $event->time_end
+	// 			],
+	// 			'shortContent' => $event->short_content,
+	// 			'content' => $event->content,
+	// 			'images' => $img,
+	// 			'type' => $event->type,
+	// 			'policy' => $event->policy,
+	// 			'active' => $event->active
+	// 		]
+	// 	];
+	// 	return Response::json($send);
+	// }
 
 	/**
 	 * Store a newly created resource in storage.
@@ -193,7 +255,7 @@ class EventController extends Controller {
 	public function postEventComplete(Request $request){
 		$userEvent = UserEvent::where('event_id', '=', $request->eventId)
 			->where('member_id', '=', $request->memberId)->first();
-		if (count($userEvent) == 0) {
+		if (count($userEvent) == 1) {
 			$success = 0;
 		} else {
 			$success = 1;
@@ -205,7 +267,7 @@ class EventController extends Controller {
 		}
 		$send = [
 			'success' => $success,
-			'message' => ($success == 0) ? 'Member and event existed in database' : 'Success'
+			'message' => ($success == 0) ? 'Bạn đã tham gia sự kiện này' : 'Success'
 		];
 		return Response::json($send);
 	}

@@ -71,6 +71,7 @@ class LoginController extends Controller {
 		}
 		// Save account
 		$member = new Member;
+		$member->facebook_id = '';
 		$member->username = $username;
 		$member->gmail = $gmail;
 		$member->password = Hash::make($password);

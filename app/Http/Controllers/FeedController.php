@@ -373,7 +373,7 @@ class FeedController extends Controller {
 			$member['username']   =$mem->username;
 			// $member['rank']       =$mem->rank;
 			// $member['like']       =$mem->like;
-			$member['avatarUrl']  =$mem->avatar_url;
+			$member['avatarUrl']  =$mem->facebook_id==''?URLWEB.$mem->avatar_url:$mem->avatar_url;
 			// $member['totalImage'] =$mem->total_image ;
 
 
