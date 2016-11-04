@@ -17,6 +17,7 @@ class CreateCommentsTable extends Migration {
 			$table->increments('id');
 			$table->integer('member_id')->unsigned();
 			$table->integer('feed_id')->unsigned();
+			$table->integer('parent_id')->length(10);
 			$table->text('comment');
 			$table->bigInteger('num_like');
 			$table->datetime('time');

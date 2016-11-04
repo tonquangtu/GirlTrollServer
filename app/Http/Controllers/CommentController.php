@@ -20,6 +20,7 @@ class CommentController extends Controller {
 		
 		// Get data send by client
 		$memberId = $request->input('memberId');
+		$parentId = $request->input('parentId');
 		$feedId = $request->input('feedId');
 		$comment = $request->input('comment');
 
@@ -27,7 +28,7 @@ class CommentController extends Controller {
 		if($memberId==''){
 			return Response::json([
 				'success'=>0,
-				'message'=>'Not login',
+				'message'=>'Bạn chưa đăng nhập',
 				'data'=>null
 			]);
 		}else{
@@ -36,6 +37,7 @@ class CommentController extends Controller {
 			$object = new Comment;
 			$object->member_id = $memberId;
 			$object->feed_id = $feedId;
+			$object->parent_id = $parentId;
 			$object->comment = $comment;
 			$object->num_like = 0;
 			$object->time = date('Y-m-d H:i:s');
@@ -50,6 +52,7 @@ class CommentController extends Controller {
 				'message'=>'Success',
 				'data'=>[
 					'commentId'=>$object->id,
+					'parentId'=>$object->parent_id,
 					'comment' => $comment,
 					'numLike' => 0,
 					'isLike' => 0,
@@ -73,19 +76,20 @@ class CommentController extends Controller {
 		//Get data send by client
 		$memberId = $request->input('memberId');
 		$feedId = $request->input('feedId');
+		$parentId = $request->input('parentId');
 		$currentCommentId = $request->input('currentCommentId');
 		$limit = $request->input('limit');
 
 		
-		//If not comment of feed
-		if(count(Comment::where('feed_id',$feedId)->get())==0){
+		//If not comment of feed has parent id = $parentId
+		if(count(Comment::where('feed_id',$feedId)->where('parent_id',$parentId)->get())==0){
 			$success     = 0;
 			$data        = [];
 			$afterCommentId = 0;
 		}
 
-		//Error if end of comment of feed
-		elseif($currentCommentId==Comment::where('feed_id',$feedId)->orderBy('id','ASC')->first()->id){
+		//Error if end of comment of feed has parent id
+		else if($currentCommentId==Comment::where('feed_id',$feedId)->where('parent_id',$parentId)->orderBy('id','ASC')->first()->id){
 			$success     = 0;
 			$data        = [];
 			$afterCommentId = 0;
@@ -93,12 +97,12 @@ class CommentController extends Controller {
 
 			//currentCommentId == -1 => the first load comment of feed
 			if($currentCommentId == -1){
-				$current = Comment::where('feed_id',$feedId)->orderBy('id','ASC')->get()->last()->id+1;
+				$current = Comment::where('feed_id',$feedId)->where('parent_id',$parentId)->orderBy('id','ASC')->get()->last()->id+1;
 			} else{
 				$current = $currentCommentId;
 			}
 
-			$comments = Comment::where('feed_id',$feedId)->where('id','<', $current)->orderBy('id','DESC')->take($limit)->get();
+			$comments = Comment::where('feed_id',$feedId)->where('parent_id',$parentId)->where('id','<', $current)->orderBy('id','DESC')->take($limit)->get();
 			$data = $this->getComment($comments, $memberId);
 
 			$success = 1;
@@ -125,13 +129,14 @@ class CommentController extends Controller {
 		//Get data send by client
 		$memberId = $request->input('memberId');
 		$feedId = $request->input('feedId');
+		$parentId = $request->input('parentId');
 		$currentCommentId = $request->input('currentCommentId');
 		$limit = $request->input('limit');
 
 
 		
 		//If not comment of feed
-		if(count(Comment::where('feed_id',$feedId)->get())==0){
+		if(count(Comment::where('feed_id',$feedId)->where('parent_id',$parentId)->get())==0){
 			$success     = 0;
 			$data        = [];
 			$afterCommentId = 0;
@@ -141,20 +146,20 @@ class CommentController extends Controller {
 		//currentCommentId == max comment => this is newest comment of feed
 		//else load $limit new comment of feed
 		elseif($currentCommentId == -1){
-			$comment = Comment::where('feed_id',$feedId)->orderBy('id','DESC')->take($limit)->get();
+			$comment = Comment::where('feed_id',$feedId)->where('parent_id',$parentId)->orderBy('id','DESC')->take($limit)->get();
 			
 			$data = $this->getComment($comment, $memberId);
 
 			$success = 1;
 			$afterCommentId = (int)$comment->first()->id;
 			$message = "Success";
-		}elseif($currentCommentId==Comment::where('feed_id', $feedId)->orderBy('id','ASC')->get()->last()->id){
+		}elseif($currentCommentId==Comment::where('feed_id', $feedId)->where('parent_id',$parentId)->orderBy('id','ASC')->get()->last()->id){
 			$data = null;
 			$success = 1;
 			$afterCommentId = $currentCommentId;
 			$message = "This is newest Comment Of Feed";
 		} else {
-			$comment = Comment::where('feed_id',$feedId)->where('id','>',$currentCommentId)->orderBy('id','ASC')->take($limit)->get();
+			$comment = Comment::where('feed_id',$feedId)->where('parent_id',$parentId)->where('id','>',$currentCommentId)->orderBy('id','ASC')->take($limit)->get();
 			//Sort By DESC OF ID
 			$comment->sortByDesc('id', $options = SORT_REGULAR);
 
@@ -196,6 +201,8 @@ class CommentController extends Controller {
 			$member['avatarUrl']  =$mem->facebook_id==''?URLWEB.$mem->avatar_url:$mem->avatar_url;
 			$member['totalImage'] =$mem->total_image ;
 
+			//Get num reply comment
+			$numRep = count(Comment::where('parent_id',$item->id)->get());
 			//Set liked
 			$isLike = MemberLikeComment::where('member_id', $memberId)->where('comment_id',$item->id)->first();
 			if(isset($isLike->id)){
@@ -207,6 +214,7 @@ class CommentController extends Controller {
 			$mdata = array();
 			$mdata['commentId']  = $item->id;
 			$mdata['numLike']   = $item->num_like;
+			$mdata['numRep']	= $numRep;
 			$mdata['comment'] = $item->comment;
 			$mdata['isLike']  = $liked;
 			$mdata['time']    = $item->time;

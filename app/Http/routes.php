@@ -10,10 +10,11 @@
 | and give it the controller to call when that URI is requested.
 |
 */
+// define('URLWEB','http://girltrollserver.890m.com/');
 // define('URLWEB','http://girltroll.890m.com/');
 define('URLWEB','http://localhost/GirlTroll/');
 define('URLWEB_CLIENT','http://localhost/GirlTrollWeb/');
-// define('URLWEB_CLIENT','http://girltrollsv.ga');
+// define('URLWEB_CLIENT','http://girltrollsv.cf');
 Route::get('/', 'WelcomeController@index');
 
 Route::get('home', 'HomeController@index');
@@ -91,8 +92,14 @@ Route::post('feed/comment/delete',['as'=>'deleteComment', 'uses'=>'CommentContro
  */
 Route::post('feed/comment/like',['as'=>'likeComment', 'uses'=>'CommentController@likeComment']);
 
-
+/**
+ * Get feed with id
+ */
 Route::get('feed/get',['as'=>'getFeed','uses'=>'FeedController@getFeed']);
+/**
+ * Get all feed of member
+ */
+Route::get('feed/member',['as'=>'getFeedOfMember','uses'=>'FeedController@getFeedOfMember']);
 /**
  * Save a new feed
  */
@@ -121,9 +128,12 @@ Route::get('event/addImage/{id}',['as'=>'event.getAddImage','uses'=>'EventContro
  * Add Image Was Choosed Of Event
  */
 Route::post('event/addImage/{id}',['as'=>'event.postAddImage','uses'=>'EventController@postAddImageEvent']);
-
 /**
- * Get list event, Get information event
+ * Get list event
+ */
+Route::get('event/list','EventController@getListEvent');
+/**
+ * Get list event active, Get information event
  */
 Route::resource('event','EventController');
 
@@ -135,3 +145,9 @@ Route::get('testPostFeed','FeedController@testPostFeed');
 /**
  * Hom 
  */
+Route::get('testMail', function(){
+	Mail::send('emails.testMail',['hoten'=>'Nguyen Thanh Tung'],function($ms){
+		$ms->from('thanhtung.tvg95@gmail.com','Nguyen Thanh Tung');
+		$ms->to('sinhvienitpro95@gmail.com','SVIT')->subject('Demo send mail');
+	});
+});

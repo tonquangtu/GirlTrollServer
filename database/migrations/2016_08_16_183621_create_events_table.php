@@ -16,6 +16,7 @@ class CreateEventsTable extends Migration {
 		{
 			$table->increments('id');
 			$table->text('title');
+			$table->text('url_image_event');
 			$table->text('short_content');
 			$table->text('content');
 			$table->smallInteger('type')->length(6);

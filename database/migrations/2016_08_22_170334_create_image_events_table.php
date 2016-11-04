@@ -19,7 +19,7 @@ class CreateImageEventsTable extends Migration {
 			$table->integer('event_id')->unsigned();
 			$table->foreign('image_id')->references('id')->on('image');
 			$table->foreign('event_id')->references('id')->on('event');
-			$table->timestamps();
+			// $table->timestamps();
 		});
 	}
 

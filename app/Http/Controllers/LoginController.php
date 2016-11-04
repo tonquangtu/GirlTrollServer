@@ -33,6 +33,7 @@ class LoginController extends Controller {
 			$member->like = 0;
 			$member->avatar_url = $request->input('avatarUrl');
 			$member->total_image = 0;
+			$member->active=1;
 			$member->save();
 			$success = 1;
 		}
@@ -88,7 +89,7 @@ class LoginController extends Controller {
 		];
 		try{
 			Mail::send('emails.active',$data,function($msg){
-				$msg->from('thanhtung.tvg95@gmail.com','GirlTrollSV');
+				$msg->from('tungnt.tvg01.hust@gmail.com','GirlTrollSV');
 				$msg->to(Input::get('gmail'),Input::get('username'))->subject('Xác thực người dùng');
 			});
 		}catch(Exception $e){
@@ -128,7 +129,7 @@ class LoginController extends Controller {
 						'data'=>[
 									'memberId'=>$member->id,
 									'username'=>$member->username,
-									'avatarUrl'=>$member->avatar_url,
+									'avatarUrl'=>URLWEB.$member->avatar_url,
 									'like'=>$member->like,
 									'totalImage'=>$member->total_image,
 									'active'=>$member->active
@@ -142,7 +143,7 @@ class LoginController extends Controller {
 							'data'=>[
 								'memberId'=>$member->id,
 								'username'=>$member->username,
-								'avatarUrl'=>$member->avatar_url,
+								'avatarUrl'=>URLWEB.$member->avatar_url,
 								'like'=>$member->like,
 								'totalImage'=>$member->total_image,
 								'active'=>$member->active

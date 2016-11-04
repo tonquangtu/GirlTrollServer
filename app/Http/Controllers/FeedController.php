@@ -10,6 +10,7 @@ use Image;
 use App\Image as ImageModel;
 use App\Video, App\Member, App\MemberLikeFeed;
 use DB;
+use App\ImageCover;
 use Thumbnail;
 
 class FeedController extends Controller {
@@ -96,6 +97,16 @@ class FeedController extends Controller {
 			// Add number image to member
 			$member->first()->total_image += $i;
 			$member->first()->save();
+
+			//If post coverimage
+			if($typeImage==1){
+				$idcoverimage = $request->input('coverImageId');
+				$imagecover = ImageCover::find($idcoverimage);
+				if(isset($imagecover->id)){
+					$imagecover->number_cover++;
+					$imagecover->save();
+				}
+			}
 
 			if($i!=$totalFile){
 				$success = 0;
@@ -195,11 +206,10 @@ class FeedController extends Controller {
 		
 		//Create thumbnail and save to the pathThumbnail use library Image Laravel
 		$img = Image::make($pathImg.'/'.$imagename);
-		$img->resize($width, $height)->save($pathThumb.'/'.$imagename);
+		$img->resize($width, null,function($con){$con->aspectRatio();})->save($pathThumb.'/'.$imagename);
 
 		return null;
 	}
-
 
 	/**
 	 * Get List New Feed
@@ -368,13 +378,17 @@ class FeedController extends Controller {
 			
 			
 			$mem = $item->member()->first();
-			$member= array();
-			$member['memberId']   =$mem->id;
-			$member['username']   =$mem->username;
-			// $member['rank']       =$mem->rank;
-			// $member['like']       =$mem->like;
-			$member['avatarUrl']  =$mem->facebook_id==''?URLWEB.$mem->avatar_url:$mem->avatar_url;
-			// $member['totalImage'] =$mem->total_image ;
+			if(isset($mem->id)){
+				$member= array();
+				$member['memberId']   =$mem->id;
+				$member['username']   =$mem->username;
+				// $member['rank']       =$mem->rank;
+				// $member['like']       =$mem->like;
+				$member['avatarUrl']  =$mem->facebook_id==''?URLWEB.$mem->avatar_url:$mem->avatar_url;
+				// $member['totalImage'] =$mem->total_image ;
+			}else{
+				$member = null;
+			}
 
 
 			$isLike = MemberLikeFeed::where('member_id', $memberId)->where('feed_id',$item->id)->first();
@@ -571,10 +585,9 @@ class FeedController extends Controller {
 	 */
 	public function getFeedOfMember(Request $request){
 
-		$feedId = $request->input('feedId');
 		$memberId = $request->input('memberId');
 		// $idMember = Member::where('member_id',$memberId)->first();
-		$feed = Feed::where('id',$feedId)->get();
+		$feed = Feed::where('member_id',$memberId)->get();
 		if(isset($feed->first()->id)){
 			$data = $this->getListFeed($feed, $memberId);
 			return Response::json([
@@ -585,7 +598,7 @@ class FeedController extends Controller {
 		}else{
 			return Response::json([
 				'success'=>0,
-				'message'=>'Không Tìm Thấy Feed',
+				'message'=>'Bạn chưa đăng bài viết nào!',
 				'data'=>null
 				]);
 		}

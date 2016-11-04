@@ -81,8 +81,8 @@ class CoverImageController extends Controller {
 			$filename = changeTitle(time().$image->getClientOriginalName());
 			$pathImg = 'public/imagecover';
 			$pathThumb = 'public/imagecover/thumbnail';
-			$width = 100;
-			$height = 100;
+			$width = 500;
+			$height = 600;
 			$this->resizeImageCover($image,$filename,$width,$height,$pathImg,$pathThumb);
 			$coverimage->url_image = $pathImg.'/'.$filename;
 			$coverimage->url_image_thumbnail = $pathThumb.'/'.$filename;
@@ -190,7 +190,7 @@ class CoverImageController extends Controller {
 		
 		//Create thumbnail and save to the pathThumbnail
 		$img = Image::make($pathImg.'/'.$imagename);
-		$img->resize($width, $height)->save($pathThumb.'/'.$imagename);
+		$img->resize($width, null, function($con){$con->aspectRatio();})->save($pathThumb.'/'.$imagename);
 
 		return null;
 	}
