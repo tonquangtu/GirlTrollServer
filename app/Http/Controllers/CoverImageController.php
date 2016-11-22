@@ -89,7 +89,8 @@ class CoverImageController extends Controller {
 			$coverimage->save();
 			return Response::json([
 					'success'=>1,
-					'message'=>'Success'
+					'message'=>'Success',
+					'lastId'=>$coverimage->id
 				]);
 		} else{
 			return Response::json([

@@ -1,7 +1,7 @@
 <?php namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Feed, App\Member;
-use Response;
+use Response, Mail, Input;
 
 class WelcomeController extends Controller {
 
@@ -117,7 +117,7 @@ class WelcomeController extends Controller {
 				$member['username']   =$item->username;
 				$member['gmail']   =$item->gmail;
 				$member['like']       =$item->like;
-				$member['avatarUrl']  =$item->avatar_url;
+				$member['avatarUrl']  =$item->facebook_id==''?URLWEB.$item->avatar_url:$item->avatar_url;
 				$member['totalImage'] =$item->total_image ;
 				$member['active'] =$item->active ;
 				$data[] = $member;
@@ -134,5 +134,39 @@ class WelcomeController extends Controller {
 		]);
 	}
 
+	public function postContact(Request $request){
+		$data=[
+			'hoten' => $request->input('name'),
+			'email' => $request->input('email'),
+			'mess'  => $request->input('mess')
+		];
+		Mail::send('emails.reply',$data,function($msg){
+			$msg->from('girltrollsv@gmail.com',Input::get('name'));
+			$msg->to('girltrollsv@gmail.com')->subject('GirlTrollSV Phản hồi của khách hàng');
+		});
+	}
+
+	/**
+	 * Get information member
+	 * @return [type] [description]
+	 */
+	public function getMember(Request $request, $id){
+		$item = Member::find($id);
+
+		if(isset($item->id)){
+			$member['memberId']   =$item->id;
+			$member['facebookId']   =$item->facebook_id;
+			$member['username']   =$item->username;
+			$member['gmail']   =$item->gmail;
+			$member['like']       =$item->like;
+			$member['avatarUrl']  =$item->facebook_id==''?URLWEB.$item->avatar_url:$item->avatar_url;
+			$member['totalImage'] =$item->total_image ;
+			$member['active'] =$item->active ;
+			
+			return Response::json(['success'=>1,'message'=>'Success','data'=>$member]);
+		}else{
+
+		}
+	}
 
 }

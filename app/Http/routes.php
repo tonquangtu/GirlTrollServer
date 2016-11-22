@@ -25,6 +25,7 @@ Route::controllers([
 ]);
 
 //Route::post('auth/login',['as'=>'postLogin','uses'=>'Auth\AuthController@postLogin']);
+Route::get('member/{id}','WelcomeController@getMember');
 
 Route::get('member',['as'=>'getListMember', 'uses'=>'WelcomeController@getListMember']);
 
@@ -68,6 +69,10 @@ Route::post('feed/top',['as'=>'getTopFeed', 'uses'=>'FeedController@getTopFeed']
 Route::post('feed/like',['as'=>'postLike', 'uses'=>'FeedController@postLike']);
 
 /**
+ * Get hot feed image, hot feed video
+ */
+Route::get('feed/hot',['as'=>'hotfeed','uses'=>'FeedController@getHotFeed']);
+/**
  * Post comment
  */
 Route::post('feed/comment/post',['as'=>'postComment', 'uses'=>'CommentController@postComment']);
@@ -100,6 +105,8 @@ Route::get('feed/get',['as'=>'getFeed','uses'=>'FeedController@getFeed']);
  * Get all feed of member
  */
 Route::get('feed/member',['as'=>'getFeedOfMember','uses'=>'FeedController@getFeedOfMember']);
+
+Route::post('feed/delete/{id}','FeedController@destroy');
 /**
  * Save a new feed
  */
@@ -145,9 +152,9 @@ Route::get('testPostFeed','FeedController@testPostFeed');
 /**
  * Hom 
  */
-Route::get('testMail', function(){
-	Mail::send('emails.testMail',['hoten'=>'Nguyen Thanh Tung'],function($ms){
-		$ms->from('thanhtung.tvg95@gmail.com','Nguyen Thanh Tung');
-		$ms->to('sinhvienitpro95@gmail.com','SVIT')->subject('Demo send mail');
-	});
-});
+Route::post('contact','WelcomeController@postContact');
+
+/**
+ * Get feed was liked (history)
+ */
+Route::get('history','FeedController@getHistory');

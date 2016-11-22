@@ -79,7 +79,8 @@ class LoginController extends Controller {
 		$member->like=0;
 		$member->avatar_url = 'public/avatar/default.jpg';
 		$member->total_image = 0;
-		$member->active = 0;
+		// $member->active = 0;
+		$member->active = 1;
 		$member->save();
 
 		$data = [
@@ -87,19 +88,19 @@ class LoginController extends Controller {
 			'gmail'=>$gmail,
 			'password'=>$password
 		];
-		try{
-			Mail::send('emails.active',$data,function($msg){
-				$msg->from('tungnt.tvg01.hust@gmail.com','GirlTrollSV');
-				$msg->to(Input::get('gmail'),Input::get('username'))->subject('Xác thực người dùng');
-			});
-		}catch(Exception $e){
-			$member->delete();
-			return Response::json([
-				'success'=>0,
-				'message'=>'Gửi Mail Kích Hoạt Không Thành Công',
-				'data'=>null
-				]);
-		}
+		// try{
+		// 	Mail::send('emails.active',$data,function($msg){
+		// 		$msg->from('tungnt.tvg01.hust@gmail.com','GirlTrollSV');
+		// 		$msg->to(Input::get('gmail'),Input::get('username'))->subject('Xác thực người dùng');
+		// 	});
+		// }catch(Exception $e){
+		// 	$member->delete();
+		// 	return Response::json([
+		// 		'success'=>0,
+		// 		'message'=>'Gửi Mail Kích Hoạt Không Thành Công',
+		// 		'data'=>null
+		// 		]);
+		// }
 		
 		return Response::json([
 				'success'=>1,
