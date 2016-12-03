@@ -63,6 +63,7 @@ class WelcomeController extends Controller {
 	 * @return [type]           [description]
 	 */
 	public function getListMember(Request $request){
+		echo 'abc';die;
 		$limit = (int)$request->input('limit');
 		$order = (int)$request->input('order');
 
@@ -115,6 +116,15 @@ class WelcomeController extends Controller {
 			'message'=>'Success',
 			'data'=>$data
 		]);
+	}
+
+	/**
+	 * Update infomation for account
+	 * @param  Request $request [description]
+	 * @return [type]           [description]
+	 */
+	public updateAccount($Request request) {
+
 	}
 
 

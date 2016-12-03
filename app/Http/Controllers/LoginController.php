@@ -158,4 +158,37 @@ class LoginController extends Controller {
 			]);
 	}
 
+	// public function updateAccount(Request $request) {
+	// 	$email = $request->email;
+	// 	$username = $request->name;
+	// 	$password = $request->password;
+
+	// 	$temp = Member::where('name',$email)->all();
+	// 	if(count($temp) == 1)){
+	// 		return Response::json([
+	// 			'success' => 0,
+	// 			'message' =>'Email đã tồn tại',
+	// 			'data' => null
+	// 		]);
+	// 	}
+
+	// 	$member = new Member;
+	// 	$member->username = $name;
+	// 	$member->gmail = $email;
+	// 	$member->password = Hash::make($password);
+	// 	$member->save();
+
+	// 	$data = [
+	// 		'name' => $username,
+	// 		'email' => $gmail,
+	// 		'password' => $password
+	// 	];
+		
+	// 	return Response::json([
+	// 			'success' => 1,
+	// 			'message' => 'Success',
+	// 			'data' => $data
+	// 		]);
+	// }
+
 }

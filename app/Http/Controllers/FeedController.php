@@ -590,4 +590,30 @@ class FeedController extends Controller {
 				]);
 		}
 	}
+
+
+	/**
+	 * Get all feed of member id
+	 * @param  Request $request [description]
+	 * @return [type]           [description]
+	 */
+	// public function getAllFeedOfMember(Request $request) {
+	// 	$memberId = $request->input('memberId');
+	// 	$listFeed = Feed::where('member_id', $memberId)->orderBy('id', 'DESC')->get();
+	// 	if (isset($listFeed->first()->id)) {
+	// 		$success = 1;
+	// 		$message = "Success";
+	// 		$data = $this->getListFeed($listFeed, $memberId);
+	// 	} else {
+	// 		$success = 0;
+	// 		$message = "Not found";
+	// 		$data = null;
+	// 	}
+	// 	$result = Response::json([
+	// 		'success' => $success,
+	// 		'message' => $message,
+	// 		'data' => $data
+	// 		]);
+	// 	return $result;
+	// }
 }

@@ -46,6 +46,7 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
         ),
         'P' => 
         array (
+            'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
         ),
         'M' => 
@@ -128,6 +129,10 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
         'Stringy\\' => 
         array (
             0 => __DIR__ . '/..' . '/danielstjules/stringy/src',
+        ),
+        'Psr\\Log\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
         ),
         'Psr\\Http\\Message\\' => 
         array (
@@ -232,10 +237,6 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
             'Psy\\' => 
             array (
                 0 => __DIR__ . '/..' . '/psy/psysh/src',
-            ),
-            'Psr\\Log\\' => 
-            array (
-                0 => __DIR__ . '/..' . '/psr/log',
             ),
             'Prophecy\\' => 
             array (
