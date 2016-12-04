@@ -10,7 +10,8 @@ use Image;
 use App\Image as ImageModel;
 use App\Video, App\Member, App\MemberLikeFeed;
 use DB;
-use Thumbnail;
+use App\ImageCover, App\HotFeed, App\Comment;
+use Thumbnail, File;
 
 class FeedController extends Controller {
 
@@ -97,6 +98,16 @@ class FeedController extends Controller {
 			$member->first()->total_image += $i;
 			$member->first()->save();
 
+			//If post coverimage
+			if($typeImage==1){
+				$idcoverimage = $request->input('coverImageId');
+				$imagecover = ImageCover::find($idcoverimage);
+				if(isset($imagecover->id)){
+					$imagecover->number_cover++;
+					$imagecover->save();
+				}
+			}
+
 			if($i!=$totalFile){
 				$success = 0;
 				$message = "Thêm Không Đủ Hình Ảnh";
@@ -177,6 +188,61 @@ class FeedController extends Controller {
 		]);
 	}
 
+	/**
+	 * Destroy feed
+	 * @param  [type] $id [description]
+	 * @return [type]     [description]
+	 */
+	public function destroy($id){
+		$feed = Feed::find($id);
+		if(isset($feed->id)){
+			$images = $feed->image()->get();
+			$video = $feed->video()->first();
+			$member = $feed->member()->first();
+			$memberlikefeed= $feed->memberlikefeed()->get();
+			$comment = $feed->comment()->get();
+			$hotfeed = $feed->hotfeed()->get();
+
+			foreach($images as $item){
+				File::delete(base_path().'/'.$item->url_image);
+				File::delete(base_path().'/'.$item->url_image_thumbnail);
+				$imageevent = $item->imageevent()->get();
+				foreach($imageevent as $i){
+					$i->delete();
+				}
+
+				$userevent=$item->userevent()->get();
+				foreach($userevent as $j){
+					$j->delete();
+				}
+				$item->delete();
+			}
+			if(isset($video->id)){
+				File::delete(base_path().'/'.$video->url_video);
+				File::delete(base_path().'/'.$video->url_image_thumbnail);
+				$video->delete();
+			}
+
+			$member->like-=$feed->like;
+			$member->total_image-=count($images);
+			$member->save();
+
+			foreach($memberlikefeed as $item){
+				$item->delete();
+			}
+			foreach($comment as $item){
+				$item->delete();
+			}
+			foreach($hotfeed as $item){
+				$item->delete();
+			}
+			$feed->delete();
+			return Response::json(['success'=>1,'message'=>'Success']);
+
+		}else{
+			return Response::json(['success'=>0, 'message'=>'Không tồn tại ']);
+		}
+	}
 
 	/**
 	 * Store Image And Store Thumbnail
@@ -195,11 +261,10 @@ class FeedController extends Controller {
 		
 		//Create thumbnail and save to the pathThumbnail use library Image Laravel
 		$img = Image::make($pathImg.'/'.$imagename);
-		$img->resize($width, $height)->save($pathThumb.'/'.$imagename);
+		$img->resize($width, null,function($con){$con->aspectRatio();})->save($pathThumb.'/'.$imagename);
 
 		return null;
 	}
-
 
 	/**
 	 * Get List New Feed
@@ -212,20 +277,9 @@ class FeedController extends Controller {
 		$currentFeedId = (int)$request->input('currentFeedId');
 		$limit         = $request->input('limit');
 
-		// //If member not login
-		// if($memberId==''){
-		// 	$idMember = '';		
-		// }else{
-		// 	$member = Member::where('id',$memberId)->first();
-		// 	if(isset($member->id)){
-		// 		$idMember = $member->id;
-		// 	}else{
-		// 		$idMember = '';
-		// 	}
-		// }
-
 		//Error if end of feed
-		if($currentFeedId==Feed::orderBy('id','ASC')->first()->id){
+		$firstfeed = Feed::orderBy('id','ASC')->first();
+		if(!isset($firstfeed->id)||$currentFeedId==$firstfeed->id||$currentFeedId==0){
 			$success     = 0;
 			$data        = [];
 			$afterFeedId = 0;
@@ -238,7 +292,6 @@ class FeedController extends Controller {
 				$current = $currentFeedId;
 			}
 
-			// $feeds = Feed::where('id','<', $current)->orderBy('id','DESC')->take($limit)->get();
 			$feeds = Feed::where('id','<', $current)->orderBy('id','DESC')->take($limit)->get();
 			$data = $this->getListFeed($feeds, $memberId);
 
@@ -264,21 +317,6 @@ class FeedController extends Controller {
 		$currentFeedId = (int)$request->input('currentFeedId');
 		$limit         = $request->input('limit');
 
-
-		//If member not login
-		// if($memberId==''){
-		// 	$idMember = '';		
-		// }else{
-		// 	$member = Member::where('member_id',$memberId)->first();
-		// 	if(isset($member->id)){
-		// 		$idMember = $member->id;
-		// 	}else{
-		// 		$idMember = '';
-		// 	}
-		// }
-		//currentFeedId == -1 => the first load new feed
-		//currentFeedId == max feed => this is newest feed
-		//else load $limit new feed
 		if($currentFeedId == -1){
 			// $feeds = Feed::where('id','<', $current)->orderBy('id','DESC')->take($limit)->get();
 			$feeds = Feed::orderBy('id','DESC')->take($limit)->get();
@@ -368,13 +406,17 @@ class FeedController extends Controller {
 			
 			
 			$mem = $item->member()->first();
-			$member= array();
-			$member['memberId']   =$mem->id;
-			$member['username']   =$mem->username;
-			// $member['rank']       =$mem->rank;
-			// $member['like']       =$mem->like;
-			$member['avatarUrl']  =$mem->avatar_url;
-			// $member['totalImage'] =$mem->total_image ;
+			if(isset($mem->id)){
+				$member= array();
+				$member['memberId']   =$mem->id;
+				$member['username']   =$mem->username;
+				// $member['rank']       =$mem->rank;
+				// $member['like']       =$mem->like;
+				$member['avatarUrl']  =$mem->facebook_id==''?URLWEB.$mem->avatar_url:$mem->avatar_url;
+				// $member['totalImage'] =$mem->total_image ;
+			}else{
+				$member = null;
+			}
 
 
 			$isLike = MemberLikeFeed::where('member_id', $memberId)->where('feed_id',$item->id)->first();
@@ -403,18 +445,137 @@ class FeedController extends Controller {
 	}
 
 	/**
+	 * Get hot feed image, hot feed video
+	 * @param  Request $request [description]
+	 * @return [type]           [description]
+	 */
+	public function getHotFeed(Request $request){
+		// Get data from client
+		$memberId = $request->input('memberId');
+		$type = $request->input('type');
+		$currentFeedId = (int)$request->input('currentFeedId');
+		$limit         = $request->input('limit');
+
+		//Error if end of feed
+		$firstfeed = HotFeed::where('type',$type)->orderBy('id','ASC')->first();
+		if(!isset($firstfeed->id)||$currentFeedId==$firstfeed->id||$currentFeedId==0){
+			$success     = 0;
+			$data        = [];
+			$afterFeedId = 0;
+		} else{
+
+			//currentFeedId == -1 => the first load new feed
+			if($currentFeedId == -1){
+				$current = HotFeed::where('type',$type)->orderBy('id','ASC')->get()->last()->id+1;
+			} else{
+				$current = $currentFeedId;
+			}
+			$hotfeeds = HotFeed::where('type',$type)->where('id','<',$current)->orderBy('id','DESC')->take($limit)->get();
+			
+			//Set default
+			$images=null;
+			$video = null;
+			
+			foreach($hotfeeds as $i){
+				$item=$i->feed()->first();
+				if($type==0){
+					$arr_image = $item->image()->get();
+					$images = array();
+					if(count($arr_image)==0){
+						$images = null;
+					}else{
+						foreach($arr_image as $img){
+							$images[] = [
+								'imageId'           => $img->id,
+								'urlImage'          => URLWEB.$img->url_image,
+								'type'              => $img->type,
+								'linkFace'          => $img->link_face,
+								'urlImageThumbnail' => URLWEB.$img->url_image_thumbnail
+							];
+						}
+					}
+				}else{
+					$vde = $item->video()->first();
+					$video = array();
+
+					if(isset($vde->id)){
+
+						//If video from youtube urlthumbnail is urlthumbnail of youtube video
+						if($vde->type==1){
+							$urlVideoThumbnail1 = $vde->url_image_thumbnail;
+							$urlVideo1=$vde->url_video;
+						}else{
+							$urlVideoThumbnail1 = URLWEB.$vde->url_image_thumbnail;
+							$urlVideo1 = URLWEB.$vde->url_video;
+						}
+						$video = array();
+						$video['videoId']  = $vde->id;
+						$video['urlVideo'] = $urlVideo1;
+						$video['urlVideoThumbnail'] = $urlVideoThumbnail1;
+						$video['type']     = $vde->type;
+					}else{
+						$video = null;
+					}
+				}
+
+				$mem = $item->member()->first();
+				if(isset($mem->id)){
+					$member= array();
+					$member['memberId']   =$mem->id;
+					$member['username']   =$mem->username;
+					// $member['rank']       =$mem->rank;
+					// $member['like']       =$mem->like;
+					$member['avatarUrl']  =$mem->facebook_id==''?URLWEB.$mem->avatar_url:$mem->avatar_url;
+					// $member['totalImage'] =$mem->total_image ;
+				}else{
+					$member = null;
+				}
+
+
+				$isLike = MemberLikeFeed::where('member_id', $memberId)->where('feed_id',$item->id)->first();
+				if(isset($isLike->id)){
+					$liked = $isLike->is_like;
+				}else{
+					$liked = 0;
+				}
+
+				$mdata = array();
+				$mdata['feedId']  = $item->id;
+				$mdata['title']   = $item->title;
+				$mdata['time']    = $item->time;
+				$mdata['isLike']  = $liked;
+				$mdata['like']    = $item->like;
+				$mdata['comment'] = $item->comment;
+				// $mdata['share']   = $item->share;
+				$mdata['school']  = $item->school;
+				$mdata['images']  = $images;
+				$mdata['video']  = $video;
+				$mdata['member']  = $member;
+
+				$data[] = $mdata;
+			}
+			
+			$success = 1;
+			$afterFeedId = (int)$hotfeeds->last()->id;
+		}
+		$send = [
+			'success' => $success,
+			'message' => ($success==0)?'End Of Hot Feed':'Success',
+			'data'    => $data,
+			'paging'  => [
+				'before' => $currentFeedId,
+				'after'  => $afterFeedId
+			]
+		];
+		return Response::json($send);
+	}
+
+	/**
 	 * Get List Top Feed
 	 * 
 	 * @return Response
 	 */
 	public function getTopFeed(Request $request){
-		//Get distance with now and Monday of this week
-		// $distance= floor((strtotime ("now")- strtotime("last Monday"))/86400);
-		
-		// Get date of Monday of last week
-		// $da = date('Y-m-d', strtotime("- ".($distance+7)." day"));
-		// echo $da;die;
-		 
 		// Get number week of year
 		$week = date('W', strtotime(date('Y-m-d')));
 		
@@ -424,18 +585,6 @@ class FeedController extends Controller {
 		$limit      = $request->input('limit');
 		$type       = (int)$request->input('type');
 
-		//If member not login
-		// if($memberId==''){
-		// 	$idMember = '';		
-		// }else{
-		// 	$member = Member::where('id',$memberId)->first();
-		// 	if(isset($member->id)){
-		// 		$idMember = $member->id;
-		// 	}else{
-		// 		$idMember = '';
-		// 	}
-		// }
-		
 		//Add ids to array
 		$arr_idUsed = explode(',', $listIdUsed);
 
@@ -571,11 +720,11 @@ class FeedController extends Controller {
 	 */
 	public function getFeedOfMember(Request $request){
 
-		$feedId = $request->input('feedId');
 		$memberId = $request->input('memberId');
 		// $idMember = Member::where('member_id',$memberId)->first();
-		$feed = Feed::where('id',$feedId)->get();
-		if(isset($feed->first()->id)){
+		$feed = Feed::where('member_id',$memberId)->get();
+
+		if(count($feed)>0){
 			$data = $this->getListFeed($feed, $memberId);
 			return Response::json([
 				'success'=>1,
@@ -585,7 +734,7 @@ class FeedController extends Controller {
 		}else{
 			return Response::json([
 				'success'=>0,
-				'message'=>'Không Tìm Thấy Feed',
+				'message'=>'Bạn chưa đăng bài viết nào!',
 				'data'=>null
 				]);
 		}
@@ -597,23 +746,166 @@ class FeedController extends Controller {
 	 * @param  Request $request [description]
 	 * @return [type]           [description]
 	 */
-	// public function getAllFeedOfMember(Request $request) {
-	// 	$memberId = $request->input('memberId');
-	// 	$listFeed = Feed::where('member_id', $memberId)->orderBy('id', 'DESC')->get();
-	// 	if (isset($listFeed->first()->id)) {
-	// 		$success = 1;
-	// 		$message = "Success";
-	// 		$data = $this->getListFeed($listFeed, $memberId);
-	// 	} else {
-	// 		$success = 0;
-	// 		$message = "Not found";
-	// 		$data = null;
-	// 	}
-	// 	$result = Response::json([
-	// 		'success' => $success,
-	// 		'message' => $message,
-	// 		'data' => $data
-	// 		]);
-	// 	return $result;
-	// }
+	public function getAllFeedOfMember(Request $request) {
+		$memberId = $request->input('memberId');
+		$listFeed = Feed::where('member_id', $memberId)->orderBy('id', 'DESC')->get();
+		if (isset($listFeed->first()->id)) {
+			$success = 1;
+			$message = "Success";
+			$data = $this->getListFeed($listFeed, $memberId);
+		} else {
+			$success = 0;
+			$message = "Not found";
+			$data = null;
+		}
+		$result = Response::json([
+			'success' => $success,
+			'message' => $message,
+			'data' => $data
+			]);
+		return $result;
+	}
+
+	/**
+	 * Get Feed Was Like (History of member)
+	 * @return [type] [description]
+	 */
+	public function getHistory(Request $request){
+		// Get data from client
+		$memberId = $request->input('memberId');
+		$currentFeedId = (int)$request->input('currentFeedId');
+		$limit         = $request->input('limit');
+		$type = $request->input('type');
+		if($type=='liked'){
+			$firstfeed = MemberLikeFeed::where('member_id',$memberId)->where('is_like','1')->orderBy('id','ASC')->first();
+		}else if($type=='commented'){
+			$firstfeed = Comment::where('member_id',$memberId)->groupBy('feed_id')->orderBy('id','ASC')->first();
+		}else
+			$firstfeed = Feed::where('member_id',$memberId)->orderBy('id','ASC')->first();
+		//Error if end of feed
+		// $firstfeed = MemberLikeFeed::where('member_id',$memberId)->where('is_like','1')->orderBy('id','ASC')->first();
+		if(!isset($firstfeed->id)||$currentFeedId==$firstfeed->id||$currentFeedId==0){
+			$success     = 0;
+			$data        = [];
+			$afterFeedId = 0;
+		} else{
+
+			//currentFeedId == -1 => the first load new feed
+			if($currentFeedId == -1){
+				if($type=='liked')
+					$current = MemberLikeFeed::where('member_id',$memberId)->where('is_like','1')->orderBy('id','ASC')->get()->last()->id+1;
+				else if($type=='commented')
+					$current = Comment::where('member_id',$memberId)->groupBy('feed_id')->orderBy('id','ASC')->get()->last()->id+1;
+				else
+					$current = Feed::where('member_id',$memberId)->orderBy('id','ASC')->get()->last()->id+1;
+
+			} else{
+				$current = $currentFeedId;
+			}
+
+
+			if($type=='liked')
+				$feedhistorys = MemberLikeFeed::where('member_id',$memberId)->where('is_like','1')->where('id','<',$current)->orderBy('id','DESC')->take($limit)->get();
+			else if($type=='commented')
+				$feedhistorys = Comment::where('member_id',$memberId)->where('id','<',$current)->groupBy('feed_id')->orderBy('id','DESC')->take($limit)->get();
+			else
+				$feedhistorys = Feed::where('member_id',$memberId)->where('id','<',$current)->orderBy('id','DESC')->take($limit)->get();
+			
+			foreach($feedhistorys as $i){
+				
+				if($type=='commented'||$type=='liked')
+					$item = $i->feed()->first();
+				else 
+					$item = $i;
+				$arr_image = $item->image()->get();
+				$images = array();
+				if(count($arr_image)==0){
+					$images = null;
+				}else{
+					foreach($arr_image as $img){
+						$images[] = [
+							'imageId'           => $img->id,
+							'urlImage'          => URLWEB.$img->url_image,
+							'type'              => $img->type,
+							'linkFace'          => $img->link_face,
+							'urlImageThumbnail' => URLWEB.$img->url_image_thumbnail
+						];
+					}
+				}
+				
+				$vde = $item->video()->first();
+				$video = array();
+
+				if(isset($vde->id)){
+
+					//If video from youtube urlthumbnail is urlthumbnail of youtube video
+					if($vde->type==1){
+						$urlVideoThumbnail1 = $vde->url_image_thumbnail;
+						$urlVideo1=$vde->url_video;
+					}else{
+						$urlVideoThumbnail1 = URLWEB.$vde->url_image_thumbnail;
+						$urlVideo1 = URLWEB.$vde->url_video;
+					}
+					$video = array();
+					$video['videoId']  = $vde->id;
+					$video['urlVideo'] = $urlVideo1;
+					$video['urlVideoThumbnail'] = $urlVideoThumbnail1;
+					$video['type']     = $vde->type;
+				}else{
+					$video = null;
+				}
+
+				$mem = $item->member()->first();
+				if(isset($mem->id)){
+					$member= array();
+					$member['memberId']   =$mem->id;
+					$member['username']   =$mem->username;
+					// $member['rank']       =$mem->rank;
+					// $member['like']       =$mem->like;
+					$member['avatarUrl']  =$mem->facebook_id==''?URLWEB.$mem->avatar_url:$mem->avatar_url;
+					// $member['totalImage'] =$mem->total_image ;
+				}else{
+					$member = null;
+				}
+
+				$isLike = MemberLikeFeed::where('member_id', $memberId)->where('feed_id',$item->id)->first();
+				if(isset($isLike->id)){
+					$liked = $isLike->is_like;
+				}else{
+					$liked = 0;
+				}
+				$mdata = array();
+				$mdata['feedId']  = $item->id;
+				$mdata['title']   = $item->title;
+				$mdata['time']    = $item->time;
+				$mdata['isLike']  = $liked;
+				$mdata['like']    = $item->like;
+				$mdata['comment'] = $item->comment;
+				// $mdata['share']   = $item->share;
+				$mdata['school']  = $item->school;
+				$mdata['images']  = $images;
+				$mdata['video']  = $video;
+				$mdata['member']  = $member;
+
+				$data[] = $mdata;
+		
+			}
+
+			$success = 1;
+			$afterFeedId = (int)$feedhistorys->last()->id;
+		}
+		$send = [
+			'success' => $success,
+			'message' => ($success==0)?'End Of Feed':'Success',
+			'data'    => $data,
+			'paging'  => [
+				'before' => $currentFeedId,
+				'after'  => $afterFeedId
+			]
+		];
+		return Response::json($send);
+
+
+	}
+	
 }

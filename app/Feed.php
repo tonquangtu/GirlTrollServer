@@ -27,5 +27,9 @@ class Feed extends Model {
 	public function comment(){
 		return $this->hasMany('App\Comment');
 	}
+
+	public function hotfeed(){
+		return $this->hasMany('App\HotFeed');
+	}
 	
 }

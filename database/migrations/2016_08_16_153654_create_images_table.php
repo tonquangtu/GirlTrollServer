@@ -16,7 +16,7 @@ class CreateImagesTable extends Migration {
 		{
 			$table->increments('id');
 			$table->text('url_image');
-			$table->integer('type')->length(11);
+			$table->tinyInteger('type')->length(4);
 			$table->string('link_face')->length(255);
 			$table->text('url_image_thumbnail');
 			$table->integer('feed_id')->unsigned();

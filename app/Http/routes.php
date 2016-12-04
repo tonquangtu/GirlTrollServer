@@ -10,10 +10,11 @@
 | and give it the controller to call when that URI is requested.
 |
 */
+// define('URLWEB','http://girltrollserver.890m.com/');
 // define('URLWEB','http://girltroll.890m.com/');
 define('URLWEB','http://localhost/GirlTroll/');
 define('URLWEB_CLIENT','http://localhost/GirlTrollWeb/');
-// define('URLWEB_CLIENT','http://girltrollsv.ga');
+// define('URLWEB_CLIENT','http://girltrollsv.cf');
 Route::get('/', 'WelcomeController@index');
 
 Route::get('home', 'HomeController@index');
@@ -24,6 +25,7 @@ Route::controllers([
 ]);
 
 //Route::post('auth/login',['as'=>'postLogin','uses'=>'Auth\AuthController@postLogin']);
+Route::get('member/{id}','WelcomeController@getMember');
 
 Route::get('member',['as'=>'getListMember', 'uses'=>'WelcomeController@getListMember']);
 
@@ -35,7 +37,7 @@ Route::post('signup','LoginController@signup');
 /**
  * Active account
  */
-Route::get('active','Auth\AuthController@active');
+Route::post('active','Auth\AuthController@active');
 
 /**
  * Login with account normal
@@ -67,6 +69,10 @@ Route::post('feed/top',['as'=>'getTopFeed', 'uses'=>'FeedController@getTopFeed']
 Route::post('feed/like',['as'=>'postLike', 'uses'=>'FeedController@postLike']);
 
 /**
+ * Get hot feed image, hot feed video
+ */
+Route::get('feed/hot',['as'=>'hotfeed','uses'=>'FeedController@getHotFeed']);
+/**
  * Post comment
  */
 Route::post('feed/comment/post',['as'=>'postComment', 'uses'=>'CommentController@postComment']);
@@ -84,15 +90,23 @@ Route::get('feed/comment/refresh',['as'=>'refreshComment', 'uses'=>'CommentContr
 /**
  * Delete Comment
  */
-Route::get('feed/comment/delete',['as'=>'deleteComment', 'uses'=>'CommentController@deleteComment']);
+Route::post('feed/comment/delete',['as'=>'deleteComment', 'uses'=>'CommentController@deleteComment']);
 
 /**
  * Like Comment
  */
 Route::post('feed/comment/like',['as'=>'likeComment', 'uses'=>'CommentController@likeComment']);
 
-
+/**
+ * Get feed with id
+ */
 Route::get('feed/get',['as'=>'getFeed','uses'=>'FeedController@getFeed']);
+/**
+ * Get all feed of member
+ */
+Route::get('feed/member',['as'=>'getFeedOfMember','uses'=>'FeedController@getFeedOfMember']);
+
+Route::post('feed/delete/{id}','FeedController@destroy');
 /**
  * Save a new feed
  */
@@ -121,9 +135,12 @@ Route::get('event/addImage/{id}',['as'=>'event.getAddImage','uses'=>'EventContro
  * Add Image Was Choosed Of Event
  */
 Route::post('event/addImage/{id}',['as'=>'event.postAddImage','uses'=>'EventController@postAddImageEvent']);
-
 /**
- * Get list event, Get information event
+ * Get list event
+ */
+Route::get('event/list','EventController@getListEvent');
+/**
+ * Get list event active, Get information event
  */
 Route::resource('event','EventController');
 
@@ -135,11 +152,20 @@ Route::get('testPostFeed','FeedController@testPostFeed');
 /**
  * Get all feed of member id
  */
+
 // Route::get('member/feeds', ['as' => 'getAllFeedOfMember', 'uses' => 'FeedController@getAllFeedOfMember']);
 
 /**
  * Update information for account
  */
 
-// Route::post('member/updateAccount', ['as' => 'updateAccount', 'uses' => 'LoginController@updateAccount']);
+
+Route::get('updateAccount', ['as' => 'updateAccount', 'uses' => 'LoginController@updateAccount']);
 // Route::resource('member/updateAccount', ['as' => 'updateAccount', 'uses' => 'LoginController@updateAccount']);
+
+Route::post('contact','WelcomeController@postContact');
+
+/**
+ * Get feed was liked (history)
+ */
+Route::get('history','FeedController@getHistory');

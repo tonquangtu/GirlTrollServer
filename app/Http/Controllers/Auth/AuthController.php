@@ -62,12 +62,18 @@ class AuthController extends Controller {
 		$password = $request->input('password');
 		$member = Member::where('gmail',$gmail)->first();
 		if(isset($member->id)){
-			if(crypt($password, $member->password)==$member->password){
-				$member->active = 1;
-				$member->save();
+			if($member->active==0){
+				if(crypt($password, $member->password)==$member->password){
+					$member->active = 1;
+					$member->save();
+					return view('success');
+				}else{
+					return view('error');
+				}
+			}else{
 				return view('success');
-
 			}
+			
 		}
 	}
 

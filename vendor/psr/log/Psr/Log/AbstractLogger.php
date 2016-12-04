@@ -17,7 +17,11 @@ abstract class AbstractLogger implements LoggerInterface
      * @param string $message
      * @param array  $context
      *
+<<<<<<< HEAD
      * @return null
+=======
+     * @return void
+>>>>>>> 67b05d5e7720b465ed0046694efd7fb52fabfae7
      */
     public function emergency($message, array $context = array())
     {
@@ -33,7 +37,11 @@ abstract class AbstractLogger implements LoggerInterface
      * @param string $message
      * @param array  $context
      *
+<<<<<<< HEAD
      * @return null
+=======
+     * @return void
+>>>>>>> 67b05d5e7720b465ed0046694efd7fb52fabfae7
      */
     public function alert($message, array $context = array())
     {
@@ -48,7 +56,11 @@ abstract class AbstractLogger implements LoggerInterface
      * @param string $message
      * @param array  $context
      *
+<<<<<<< HEAD
      * @return null
+=======
+     * @return void
+>>>>>>> 67b05d5e7720b465ed0046694efd7fb52fabfae7
      */
     public function critical($message, array $context = array())
     {
@@ -62,7 +74,11 @@ abstract class AbstractLogger implements LoggerInterface
      * @param string $message
      * @param array  $context
      *
+<<<<<<< HEAD
      * @return null
+=======
+     * @return void
+>>>>>>> 67b05d5e7720b465ed0046694efd7fb52fabfae7
      */
     public function error($message, array $context = array())
     {
@@ -78,7 +94,11 @@ abstract class AbstractLogger implements LoggerInterface
      * @param string $message
      * @param array  $context
      *
+<<<<<<< HEAD
      * @return null
+=======
+     * @return void
+>>>>>>> 67b05d5e7720b465ed0046694efd7fb52fabfae7
      */
     public function warning($message, array $context = array())
     {
@@ -91,7 +111,11 @@ abstract class AbstractLogger implements LoggerInterface
      * @param string $message
      * @param array  $context
      *
+<<<<<<< HEAD
      * @return null
+=======
+     * @return void
+>>>>>>> 67b05d5e7720b465ed0046694efd7fb52fabfae7
      */
     public function notice($message, array $context = array())
     {
@@ -106,7 +130,11 @@ abstract class AbstractLogger implements LoggerInterface
      * @param string $message
      * @param array  $context
      *
+<<<<<<< HEAD
      * @return null
+=======
+     * @return void
+>>>>>>> 67b05d5e7720b465ed0046694efd7fb52fabfae7
      */
     public function info($message, array $context = array())
     {
@@ -119,7 +147,11 @@ abstract class AbstractLogger implements LoggerInterface
      * @param string $message
      * @param array  $context
      *
+<<<<<<< HEAD
      * @return null
+=======
+     * @return void
+>>>>>>> 67b05d5e7720b465ed0046694efd7fb52fabfae7
      */
     public function debug($message, array $context = array())
     {

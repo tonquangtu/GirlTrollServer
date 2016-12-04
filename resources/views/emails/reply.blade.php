@@ -1,2 +1,2 @@
-Khách hàng {{$hoten}}, địa chỉ email: {{$email}} có phản hồi như sau:<br/>
+Bạn đọc {{$hoten}}, địa chỉ email: {{$email}} có phản hồi như sau:<br/>
 "{{$mess}}"
