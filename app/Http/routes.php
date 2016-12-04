@@ -69,9 +69,19 @@ Route::post('feed/top',['as'=>'getTopFeed', 'uses'=>'FeedController@getTopFeed']
 Route::post('feed/like',['as'=>'postLike', 'uses'=>'FeedController@postLike']);
 
 /**
+ * Get list hot feed for admin
+ */
+Route::get('feed/hot/list',['as'=>'getListHotFeed','uses'=>'FeedController@getListHotFeedAdmin']);
+
+/**
+ * Add feed to hot feed
+ */
+Route::post('feed/hot/add/{id}',['as'=>'addHotFeed','uses'=>'FeedController@addHotFeed']);
+/**
  * Get hot feed image, hot feed video
  */
 Route::get('feed/hot',['as'=>'hotfeed','uses'=>'FeedController@getHotFeed']);
+
 /**
  * Post comment
  */
@@ -101,16 +111,24 @@ Route::post('feed/comment/like',['as'=>'likeComment', 'uses'=>'CommentController
  * Get feed with id
  */
 Route::get('feed/get',['as'=>'getFeed','uses'=>'FeedController@getFeed']);
+
+/**
+ * Get list feed for admin
+ */
+Route::get('feed/list',['as'=>'getListFeedAdmin','uses'=>'FeedController@getListFeedAdmin']);
 /**
  * Get all feed of member
  */
 Route::get('feed/member',['as'=>'getFeedOfMember','uses'=>'FeedController@getFeedOfMember']);
 
 Route::post('feed/delete/{id}','FeedController@destroy');
+
+Route::post('feed/hot/delete/{id}','FeedController@deleteHotFeed');
+
 /**
  * Save a new feed
  */
-Route::resource('feed','FeedController',['only'=>'store']);
+Route::resource('feed','FeedController',['only'=>['store','update']]);
 
 Route::resource('coverimage','CoverImageController',['except'=>'store']);
 
@@ -138,7 +156,7 @@ Route::post('event/addImage/{id}',['as'=>'event.postAddImage','uses'=>'EventCont
 /**
  * Get list event
  */
-Route::get('event/list','EventController@getListEvent');
+Route::get('event/list',['as'=>'getListEvent','uses'=>'EventController@getListEvent']);
 /**
  * Get list event active, Get information event
  */
