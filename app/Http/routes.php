@@ -173,8 +173,19 @@ Route::resource('event','EventController');
 Route::get('testPostFeed','FeedController@testPostFeed');
 
 /**
- * Hom 
+ * Get all feed of member id
  */
+
+// Route::get('member/feeds', ['as' => 'getAllFeedOfMember', 'uses' => 'FeedController@getAllFeedOfMember']);
+
+/**
+ * Update information for account
+ */
+
+
+Route::get('updateAccount', ['as' => 'updateAccount', 'uses' => 'LoginController@updateAccount']);
+// Route::resource('member/updateAccount', ['as' => 'updateAccount', 'uses' => 'LoginController@updateAccount']);
+
 Route::post('contact','WelcomeController@postContact');
 
 /**

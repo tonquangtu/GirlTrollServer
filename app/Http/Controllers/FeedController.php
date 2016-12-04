@@ -385,6 +385,7 @@ class FeedController extends Controller {
 			]
 		];
 		return Response::json($send);
+		
 	}
 
 	/**
@@ -533,20 +534,20 @@ class FeedController extends Controller {
 
 		if($currentFeedId == -1){
 			// $feeds = Feed::where('id','<', $current)->orderBy('id','DESC')->take($limit)->get();
-			$feeds = Feed::where('checked','>',0)->orderBy('id','DESC')->take($limit)->get();
+			$feeds = Feed::orderBy('id','DESC')->take($limit)->get();
 			
 			$data = $this->getListFeed($feeds, $memberId);
 
 			$success = 1;
 			$afterFeedId = (int)$feeds->first()->id;
 			$message = "Success";
-		}else if($currentFeedId==Feed::where('checked','>',0)->orderBy('id','ASC')->get()->last()->id){
+		}else if($currentFeedId==Feed::orderBy('id','ASC')->get()->last()->id){
 			$data = null;
 			$success = 1;
 			$afterFeedId = $currentFeedId;
 			$message = "Feed Mới Nhất";
 		} else {
-			$feeds = Feed::where('checked','>',0)->where('id','>',$currentFeedId)->orderBy('id','ASC')->take($limit)->get();
+			$feeds = Feed::where('id','>',$currentFeedId)->orderBy('id','ASC')->take($limit)->get();
 			//Sort By DESC OF ID
 			$feeds->sortByDesc('id', $options = SORT_REGULAR);
 
@@ -679,7 +680,6 @@ class FeedController extends Controller {
 		$limit         = $request->input('limit');
 
 		//Error if end of feed
-		//
 		$firstfeed = HotFeed::where('type',$type)->orderBy('id','ASC')->first();
 		if(!isset($firstfeed->id)||$currentFeedId==$firstfeed->id||$currentFeedId==0){
 			$success     = 0;

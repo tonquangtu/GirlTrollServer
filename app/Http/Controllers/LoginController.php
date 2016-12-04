@@ -161,4 +161,41 @@ class LoginController extends Controller {
 			]);
 	}
 
+	public function updateAccount(Request $request) {
+		return Response::json([
+				'success'=>1,
+				'message'=>'ok'
+			]);
+		$gmail = $request->email;
+		$username = $request->name;
+		$password = $request->password;
+
+		$temp = Member::where('gmail',$gmail)->count();
+		if($temp > 1)){
+			return Response::json([
+				'success' => 0,
+				'message' =>'Email đã tồn tại',
+				'data' => null
+			]);
+		}
+
+		$member = Member::find($id);
+		$member->username = $username;
+		$member->gmail = $gmail;
+		$member->password = Hash::make($password);
+		$member->save();
+
+		$data = [
+			'name' => $username,
+			'email' => $gmail,
+			'password' => $password
+		];
+		
+		return Response::json([
+				'success' => 1,
+				'message' => 'Success',
+				'data' => $data
+		]);
+	}
+
 }

@@ -1427,6 +1427,18 @@
         },
         {
             "name": "psr/log",
+<<<<<<< HEAD
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/log.git",
+                "reference": "5277094ed527a1c4477177d102fe4c53551953e0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/5277094ed527a1c4477177d102fe4c53551953e0",
+                "reference": "5277094ed527a1c4477177d102fe4c53551953e0",
+=======
             "version": "1.0.2",
             "source": {
                 "type": "git",
@@ -1437,6 +1449,7 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/php-fig/log/zipball/4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
                 "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
+>>>>>>> 67b05d5e7720b465ed0046694efd7fb52fabfae7
                 "shasum": ""
             },
             "require": {
@@ -1470,7 +1483,11 @@
                 "psr",
                 "psr-3"
             ],
+<<<<<<< HEAD
+            "time": "2016-09-19 16:02:08"
+=======
             "time": "2016-10-10 12:19:37"
+>>>>>>> 67b05d5e7720b465ed0046694efd7fb52fabfae7
         },
         {
             "name": "psy/psysh",

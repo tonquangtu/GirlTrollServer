@@ -63,6 +63,7 @@ class WelcomeController extends Controller {
 	 * @return [type]           [description]
 	 */
 	public function getListMember(Request $request){
+		echo 'abc';die;
 		$limit = (int)$request->input('limit');
 		$order = (int)$request->input('order');
 		$currentMemberId = (int)$request->input('currentMemberId');
