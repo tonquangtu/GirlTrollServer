@@ -1152,4 +1152,21 @@ class FeedController extends Controller {
 				]);
 		}
 	}
+
+	public function reportFeed(Request $request, $id, $type){
+		$feed = Feed::find($id);
+		if(isset($feed->id)){
+			$feed->checked = $type;
+			$feed->save();
+			return Response::json([
+					'success'=>1,
+					'message'=>'Success'
+				]);
+		}else{
+			return Response::json([
+					'success'=>0,
+					'message'=>'Không tồn tại bài đăng'
+				]);
+		}
+	}
 }

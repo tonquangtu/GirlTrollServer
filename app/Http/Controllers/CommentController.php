@@ -260,12 +260,21 @@ class CommentController extends Controller {
 			if(isset($object->id)){
 				$feed = $object->feed()->first();
 				$feed->comment--;
+
+				//Delete comment children if delete parent
+				$childrens = Comment::where('parent_id',$commentId)->get();
+				foreach($childrens as $item){
+					$item->delete();
+				}
+				$feed->comment-=count($childrens);
+				
 				$feed->save();
 				$object->delete();
 
 				return Response::json([
 					'success'=>1,
-					'message'=>'Success'
+					'message'=>'Success',
+					'data'=>['numberDel'=>count($childrens)+1]
 				]);
 			}else{
 				return Response::json([

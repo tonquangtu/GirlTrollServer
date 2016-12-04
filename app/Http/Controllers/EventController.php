@@ -144,7 +144,7 @@ class EventController extends Controller {
 			$send = [
 				'success' => $success,
 				'message' => $message,
-				'event' => $event
+				'data' => $event
 			];
 			return Response::json($send);
 		}
@@ -165,7 +165,7 @@ class EventController extends Controller {
 			return Response::json([
 					'success'=>0,
 					'message'=>'Không tìm thấy sự kiện',
-					'event'=>null
+					'data'=>null
 				]);
 		} else {
 			
@@ -189,7 +189,7 @@ class EventController extends Controller {
 			$send = [
 				'success' => 1,
 				'message' => 'Chi tiết thông tin sự kiện',
-				'event' => [
+				'data' => [
 					'eventId'=>$event->id,
 					'title'=>$event->title,
 					'urlImageEvent'=>URLWEB.$event->url_image_event,

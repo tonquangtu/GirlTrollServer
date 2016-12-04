@@ -125,6 +125,11 @@ Route::post('feed/delete/{id}','FeedController@destroy');
 
 Route::post('feed/hot/delete/{id}','FeedController@deleteHotFeed');
 
+
+/**
+ * Report feed
+ */
+Route::post('feed/report/{id}/{type}','FeedController@reportFeed');
 /**
  * Save a new feed
  */

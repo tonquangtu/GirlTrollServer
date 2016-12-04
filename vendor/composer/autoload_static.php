@@ -26,6 +26,16 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
         array (
             'phpDocumentor\\Reflection\\' => 25,
         ),
+        'Z' => 
+        array (
+            'Zend\\Validator\\' => 15,
+            'Zend\\Uri\\' => 9,
+            'Zend\\Stdlib\\' => 12,
+            'Zend\\Loader\\' => 12,
+            'Zend\\Json\\' => 10,
+            'Zend\\Http\\' => 10,
+            'Zend\\Escaper\\' => 13,
+        ),
         'X' => 
         array (
             'XdgBaseDir\\' => 11,
@@ -39,6 +49,7 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
             'Symfony\\Polyfill\\Util\\' => 22,
             'Symfony\\Polyfill\\Php56\\' => 23,
             'Symfony\\Component\\Yaml\\' => 23,
+            'Symfony\\Component\\OptionsResolver\\' => 34,
             'Symfony\\Component\\Filesystem\\' => 29,
             'Symfony\\Component\\EventDispatcher\\' => 34,
             'SuperClosure\\' => 13,
@@ -61,6 +72,7 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
         'I' => 
         array (
             'Intervention\\Image\\' => 19,
+            'Interop\\Container\\' => 18,
             'Illuminate\\' => 11,
         ),
         'G' => 
@@ -91,8 +103,36 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
         'phpDocumentor\\Reflection\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
-            1 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
-            2 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
+            1 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
+            2 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
+        ),
+        'Zend\\Validator\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/zendframework/zend-validator/src',
+        ),
+        'Zend\\Uri\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/zendframework/zend-uri/src',
+        ),
+        'Zend\\Stdlib\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/zendframework/zend-stdlib/src',
+        ),
+        'Zend\\Loader\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/zendframework/zend-loader/src',
+        ),
+        'Zend\\Json\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/zendframework/zend-json/src',
+        ),
+        'Zend\\Http\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/zendframework/zend-http/src',
+        ),
+        'Zend\\Escaper\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/zendframework/zend-escaper/src',
         ),
         'XdgBaseDir\\' => 
         array (
@@ -113,6 +153,10 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
         'Symfony\\Component\\Yaml\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/yaml',
+        ),
+        'Symfony\\Component\\OptionsResolver\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/options-resolver',
         ),
         'Symfony\\Component\\Filesystem\\' => 
         array (
@@ -154,6 +198,10 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
         array (
             0 => __DIR__ . '/..' . '/intervention/image/src/Intervention/Image',
         ),
+        'Interop\\Container\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/container-interop/container-interop/src/Interop/Container',
+        ),
         'Illuminate\\' => 
         array (
             0 => __DIR__ . '/..' . '/laravel/framework/src/Illuminate',
@@ -189,6 +237,25 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
     );
 
     public static $prefixesPsr0 = array (
+        'Z' => 
+        array (
+            'ZendService\\Google\\Gcm\\' => 
+            array (
+                0 => __DIR__ . '/..' . '/zendframework/zendservice-google-gcm/library',
+            ),
+            'ZendService\\Google\\Exception\\' => 
+            array (
+                0 => __DIR__ . '/..' . '/zendframework/zendservice-google-gcm/library',
+            ),
+            'ZendService\\Apple\\Exception\\' => 
+            array (
+                0 => __DIR__ . '/..' . '/zendframework/zendservice-apple-apns/library',
+            ),
+            'ZendService\\Apple\\Apns\\' => 
+            array (
+                0 => __DIR__ . '/..' . '/zendframework/zendservice-apple-apns/library',
+            ),
+        ),
         'S' => 
         array (
             'Symfony\\Component\\VarDumper\\' => 
@@ -230,6 +297,10 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
             'Symfony\\Component\\Console\\' => 
             array (
                 0 => __DIR__ . '/..' . '/symfony/console',
+            ),
+            'Sly' => 
+            array (
+                0 => __DIR__ . '/..' . '/sly/notification-pusher/src',
             ),
         ),
         'P' => 
@@ -292,6 +363,10 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
             'Diff' => 
             array (
                 0 => __DIR__ . '/..' . '/phpspec/php-diff/lib',
+            ),
+            'Davibennun\\LaravelPushNotification' => 
+            array (
+                0 => __DIR__ . '/..' . '/davibennun/laravel-push-notification/src',
             ),
         ),
         'C' => 
@@ -698,6 +773,7 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
         'PHP_Token_STRING' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_STRING_CAST' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_STRING_VARNAME' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
+        'PHP_Token_SUPER' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_SWITCH' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_Stream' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token/Stream.php',
         'PHP_Token_Stream_CachingFactory' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token/Stream/CachingFactory.php',
@@ -712,6 +788,7 @@ class ComposerStaticInitf443d4c332fa7792daaba0323ecdc0a7
         'PHP_Token_UNSET' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_UNSET_CAST' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_USE' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
+        'PHP_Token_USE_FUNCTION' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_VAR' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_VARIABLE' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_WHERE' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',

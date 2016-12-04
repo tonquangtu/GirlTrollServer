@@ -155,6 +155,10 @@ return [
 		 */
 		'Lakshmajim\Thumbnail\ThumbnailServiceProvider',
 
+		/**
+		 * Notification
+		 */
+	    'Davibennun\LaravelPushNotification\LaravelPushNotificationServiceProvider',
 	],
 
 	/*
@@ -206,6 +210,8 @@ return [
 		'Image' => 'Intervention\Image\Facades\Image',
 
 		'Thumbnail' => 'Lakshmajim\Thumbnail\Facade\Thumbnail',
+
+	    'PushNotification' => 'Davibennun\LaravelPushNotification\Facades\PushNotification',
 
 	],
 
